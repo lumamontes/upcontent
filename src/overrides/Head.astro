@@ -1,0 +1,20 @@
+---
+// Override do Head.astro do Starlight (registrado via starlight({ components })
+// no astro.config.mjs). A homepage usa o mesmo nome do produto como título da
+// página e do site; remova o título duplicado só nessa rota.
+import MermaidLoader from '../components/MermaidLoader.astro'
+import StructuredDataCopy from '../components/StructuredDataCopy.astro'
+import { getPortalConfig } from '../lib/portal-config'
+import { PRODUCT_NAME } from '../lib/product-identity'
+
+const { head } = Astro.locals.starlightRoute
+const isHome = Astro.locals.starlightRoute.id === 'readme'
+const pageHead = isHome ? head.filter(({ tag }) => tag !== 'title') : head
+const siteTitle = getPortalConfig().site?.title ?? PRODUCT_NAME
+---
+
+{pageHead.map(({ tag: Tag, attrs, content }) => <Tag {...attrs} set:html={content} />)}
+<slot />
+{isHome && <title>{siteTitle}</title>}
+<MermaidLoader />
+<StructuredDataCopy />

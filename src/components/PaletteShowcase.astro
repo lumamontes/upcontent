@@ -1,0 +1,122 @@
+---
+const palettes = {
+  quiet: { label: 'Quiet / default', accent: '#334155', surface: '#f8fafc', ink: '#0f172a' },
+  river: { label: 'River', accent: '#0f766e', surface: '#f0fdfa', ink: '#134e4a' },
+  signal: { label: 'Signal', accent: '#be123c', surface: '#fff1f2', ink: '#4c0519' },
+}
+---
+
+<div class="palette-showcase" data-palette="quiet" data-palettes={JSON.stringify(palettes)}>
+  <div class="palette-controls" role="group" aria-label="Preview palettes">
+    {Object.entries(palettes).map(([id, palette], index) => (
+      <button
+        type="button"
+        class="palette-button"
+        data-palette-button={id}
+        aria-pressed={index === 0 ? 'true' : 'false'}
+      >
+        {palette.label}
+      </button>
+    ))}
+  </div>
+  <div class="palette-preview" aria-live="polite">
+    <div class="palette-swatch" data-swatch="accent"></div>
+    <div class="palette-swatch" data-swatch="surface"></div>
+    <div class="palette-swatch" data-swatch="ink"></div>
+    <div class="palette-preview-copy">
+    <strong data-palette-label>{palettes.quiet.label}</strong>
+      <span>One configuration seam, many possible identities.</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.palette-showcase').forEach(showcase => {
+    const palettes: Record<string, { accent: string; surface: string; ink: string; label: string }> = JSON.parse(
+      showcase.dataset.palettes ?? '{}',
+    )
+    const label = showcase.querySelector('[data-palette-label]')
+
+    showcase.querySelectorAll<HTMLButtonElement>('[data-palette-button]').forEach(button => {
+      button.addEventListener('click', () => {
+        const paletteId = button.dataset.paletteButton
+        const palette = paletteId ? palettes[paletteId] : undefined
+        if (!palette) return
+        showcase.dataset.palette = paletteId
+        showcase.style.setProperty('--palette-accent', palette.accent)
+        showcase.style.setProperty('--palette-surface', palette.surface)
+        showcase.style.setProperty('--palette-ink', palette.ink)
+        if (label) label.textContent = palette.label
+        showcase.querySelectorAll('[data-palette-button]').forEach(control => {
+          control.setAttribute('aria-pressed', String(control === button))
+        })
+      })
+    })
+
+    showcase.querySelector('[data-palette-button]')?.dispatchEvent(new Event('click'))
+  })
+</script>
+
+<style>
+  .palette-showcase {
+    --palette-accent: #334155;
+    --palette-surface: #f8fafc;
+    --palette-ink: #0f172a;
+    margin: 2rem 0;
+  }
+
+  .palette-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .palette-button {
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--sl-color-text);
+    cursor: pointer;
+    padding: 0.45rem 0.75rem;
+  }
+
+  .palette-button[aria-pressed='true'] {
+    border-color: var(--sl-color-accent);
+    background: var(--sl-color-accent);
+    color: var(--sl-color-bg);
+  }
+
+  .palette-preview {
+    display: grid;
+    grid-template-columns: repeat(3, 3rem) 1fr;
+    gap: 0.75rem;
+    align-items: center;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    background: var(--palette-surface);
+    color: var(--palette-ink);
+  }
+
+  .palette-swatch {
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid color-mix(in srgb, var(--palette-ink), transparent 70%);
+    border-radius: 0.35rem;
+  }
+
+  .palette-swatch[data-swatch='accent'] { background: var(--palette-accent); }
+  .palette-swatch[data-swatch='surface'] { background: var(--palette-surface); }
+  .palette-swatch[data-swatch='ink'] { background: var(--palette-ink); }
+
+  .palette-preview-copy {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  @media (max-width: 560px) {
+    .palette-preview { grid-template-columns: repeat(3, 2.25rem) 1fr; }
+    .palette-swatch { width: 2.25rem; height: 2.25rem; }
+  }
+</style>

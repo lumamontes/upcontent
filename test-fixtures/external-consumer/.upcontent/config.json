@@ -1,0 +1,26 @@
+{
+  "site": {
+    "title": "External Consumer",
+    "description": "A fixture proving consumer-owned configuration.",
+    "logo": {
+      "src": ".upcontent/logo.svg",
+      "alt": "External Consumer"
+    },
+    "favicon": ".upcontent/favicon.svg"
+  },
+  "repo": {
+    "url": "https://github.com/example/external-consumer"
+  },
+  "theme": {
+    "customCss": [".upcontent/theme.css"]
+  },
+  "content": {
+    "titleField": "heading"
+  },
+  "navigation": {
+    "roots": ["README.md"],
+    "blocklist": {
+      "exact": ["forbidden.md"]
+    }
+  }
+}

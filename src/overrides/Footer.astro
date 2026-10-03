@@ -1,0 +1,114 @@
+---
+// Override do Footer.astro do Starlight (registrado via starlight({ components })
+// no astro.config.mjs) — reintroduz os links "Ver/Editar no GitHub" e a seção
+// "Documentos relacionados" que existiam no DocLayout.astro custom antes da
+// migração pro Starlight (ticket 02), agora via mecanismo de component override.
+import Default from '@astrojs/starlight/components/Footer.astro'
+import { getCollection } from 'astro:content'
+import { toRelativeDocPath } from '../content.config'
+import { buildGitHubUrl, resolveRelated } from '../lib/doc-links'
+import { getPortalConfig } from '../lib/portal-config'
+
+const { entry } = Astro.locals.starlightRoute
+
+// entry.id é o slug de rota do Starlight (sem extensão) — buildGitHubUrl e o
+// matching de resolveRelated precisam do path de arquivo real (com .md) pra
+// apontar pro repositório de conteúdo corretamente.
+const filePath = entry.filePath ? toRelativeDocPath(entry.filePath) : entry.id
+
+const repoUrl = (import.meta.env.REPO_URL as string | undefined) || getPortalConfig().repo?.url
+const viewUrl = buildGitHubUrl(repoUrl, filePath, 'view')
+const editUrl = buildGitHubUrl(repoUrl, filePath, 'edit')
+
+const related = entry.data.related?.length
+  ? resolveRelated(
+      entry.data.related,
+      (await getCollection('docs')).map(doc => ({
+        ...doc,
+        id: doc.filePath ? toRelativeDocPath(doc.filePath) : doc.id,
+      })),
+    )
+  : []
+---
+
+<Default><slot /></Default>
+
+{
+  (viewUrl || editUrl) && (
+    <div class="doc-actions">
+      {viewUrl && (
+        <a href={viewUrl} target="_blank" rel="noopener noreferrer" class="doc-action-link">
+          View on GitHub
+        </a>
+      )}
+      {editUrl && (
+        <a href={editUrl} target="_blank" rel="noopener noreferrer" class="doc-action-link">
+          Edit on GitHub
+        </a>
+      )}
+    </div>
+  )
+}
+
+{
+  related.length > 0 && (
+    <section class="related-docs">
+       <h2>Related documents</h2>
+      <ul>
+        {related.map(doc => (
+          <li><a href={`/${doc.slug}`}>{doc.title}</a></li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+<style>
+  @layer starlight.components {
+    .doc-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+    .doc-action-link {
+      font-size: var(--sl-text-xs);
+      color: var(--sl-color-gray-3);
+      text-decoration: none;
+      padding: 0.2rem 0.5rem;
+      border: 1px solid var(--sl-color-gray-5);
+      border-radius: 4px;
+    }
+    .doc-action-link:hover {
+      color: var(--sl-color-white);
+      background: var(--sl-color-gray-6);
+    }
+
+    .related-docs {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--sl-color-gray-5);
+    }
+    .related-docs h2 {
+      font-size: var(--sl-text-sm);
+      font-weight: 600;
+      color: var(--sl-color-gray-3);
+      margin-bottom: 0.75rem;
+    }
+    .related-docs ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .related-docs li {
+      margin: 0.3rem 0;
+    }
+    .related-docs a {
+      font-size: var(--sl-text-sm);
+      color: var(--sl-color-accent);
+      text-decoration: none;
+    }
+    .related-docs a:hover {
+      text-decoration: underline;
+    }
+  }
+</style>

@@ -1,0 +1,22 @@
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-sdp-copy]')
+
+  for (const button of buttons) {
+    button.addEventListener('click', async () => {
+      const source = button.dataset.sdpCopy
+      const label = button.querySelector('.sdp-copy-label')
+      if (!source || !label) return
+
+      try {
+        await navigator.clipboard.writeText(decodeURIComponent(source))
+        label.textContent = 'Copied'
+      } catch {
+        label.textContent = 'Copy failed'
+      }
+
+      window.setTimeout(() => {
+        label.textContent = 'Copy'
+      }, 1500)
+    })
+  }
+</script>

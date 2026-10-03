@@ -1,0 +1,59 @@
+name: Validate portal
+
+on:
+  pull_request:
+  push:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.20.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tests
+        run: pnpm test
+
+      - name: Run Astro diagnostics
+        run: pnpm check
+
+      - name: Build golden consumer
+        run: make build CONTENT_PATH=.
+
+      - name: Check golden artifact
+        run: |
+          test -f dist/index.html
+          test -f dist/pagefind/pagefind.js
+          test -f dist/upcontent-assets/favicon.svg
+
+      - name: Build external consumer fixture
+        run: make check-external
+
+      - name: Check diff hygiene
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          git diff --check "$BASE_SHA" HEAD
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=all)"

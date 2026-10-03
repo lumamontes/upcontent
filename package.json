@@ -1,0 +1,37 @@
+{
+  "name": "upcontent",
+  "type": "module",
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.20.0",
+  "bin": {
+    "upcontent": "scripts/upcontent-cli.mjs"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "check": "astro check",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@astrojs/markdown-remark": "^7.3.1",
+    "@astrojs/starlight": "^0.42.1",
+    "@fontsource/poppins": "^5.3.0",
+    "astro": "^7.3.3",
+    "js-yaml": "^4.3.2",
+    "mermaid": "^11.0.0",
+    "papaparse": "^5.7.0",
+    "unist-util-visit": "^5.0.0",
+    "zod": "^3.0.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@types/js-yaml": "^4.0.9",
+    "@types/papaparse": "^5.5.2",
+    "rehype-stringify": "^10.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "typescript": "^5.0.0",
+    "unified": "^11.0.5",
+    "vitest": "^2.0.0"
+  }
+}

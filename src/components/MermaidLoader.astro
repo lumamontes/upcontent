@@ -1,0 +1,290 @@
+---
+---
+
+<script>
+  import mermaid from 'mermaid'
+  import { renderMermaidDiagram } from '../lib/mermaid-render'
+
+  function mermaidTheme() {
+    return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'default'
+  }
+
+  mermaid.initialize({ startOnLoad: false, theme: mermaidTheme() })
+
+  let scale = 1
+  let translateX = 0
+  let translateY = 0
+  let dialogEl: HTMLDialogElement | null = null
+  let contentEl: HTMLDivElement | null = null
+
+  function applyTransform() {
+    if (contentEl) contentEl.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`
+  }
+
+  function resetTransform() {
+    scale = 1
+    translateX = 0
+    translateY = 0
+    applyTransform()
+  }
+
+  function ensureDialog() {
+    if (dialogEl) return
+
+    dialogEl = document.createElement('dialog')
+    dialogEl.className = 'mermaid-fullscreen-dialog'
+
+    const closeBtn = document.createElement('button')
+    closeBtn.type = 'button'
+    closeBtn.className = 'mermaid-fullscreen-close'
+    closeBtn.setAttribute('aria-label', 'Fechar')
+    closeBtn.textContent = '✕'
+    closeBtn.addEventListener('click', () => dialogEl?.close())
+
+    const viewport = document.createElement('div')
+    viewport.className = 'mermaid-fullscreen-viewport'
+
+    contentEl = document.createElement('div')
+    contentEl.className = 'mermaid-fullscreen-content'
+    viewport.appendChild(contentEl)
+
+    dialogEl.append(closeBtn, viewport)
+    document.body.appendChild(dialogEl)
+
+    dialogEl.addEventListener('click', e => {
+      if (e.target === dialogEl) dialogEl?.close()
+    })
+    dialogEl.addEventListener('close', resetTransform)
+
+    viewport.addEventListener(
+      'wheel',
+      e => {
+        e.preventDefault()
+        const delta = e.deltaY > 0 ? -0.1 : 0.1
+        scale = Math.min(Math.max(scale + delta, 0.2), 5)
+        applyTransform()
+      },
+      { passive: false },
+    )
+
+    let dragging = false
+    let lastX = 0
+    let lastY = 0
+    viewport.addEventListener('pointerdown', e => {
+      dragging = true
+      lastX = e.clientX
+      lastY = e.clientY
+      viewport.setPointerCapture(e.pointerId)
+    })
+    viewport.addEventListener('pointermove', e => {
+      if (!dragging) return
+      translateX += e.clientX - lastX
+      translateY += e.clientY - lastY
+      lastX = e.clientX
+      lastY = e.clientY
+      applyTransform()
+    })
+    viewport.addEventListener('pointerup', () => { dragging = false })
+    viewport.addEventListener('pointerleave', () => { dragging = false })
+  }
+
+  function openFullscreen(svg: string) {
+    ensureDialog()
+    if (!dialogEl || !contentEl) return
+    contentEl.innerHTML = svg
+    resetTransform()
+    dialogEl.showModal()
+  }
+
+  async function copyToClipboard(button: HTMLButtonElement, text: string) {
+    await navigator.clipboard.writeText(text)
+    const original = button.textContent
+    button.textContent = 'Copiado!'
+    setTimeout(() => { button.textContent = original }, 2000)
+  }
+
+  async function processDiagrams() {
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>('div.mermaid'))
+    for (const node of nodes) {
+      // <br/> inside a div becomes a DOM element before textContent reads it — não deveria
+      // acontecer (remarkMermaid já normaliza), mas o replace aqui é defensivo.
+      const source = (node.textContent ?? '').replace(/ /g, ' ')
+      const result = await renderMermaidDiagram(mermaid, source)
+
+      if (result.status === 'ok') {
+        const container = document.createElement('div')
+        container.className = 'mermaid-container'
+        container.dataset.mermaidSource = source
+
+        const copyBtn = document.createElement('button')
+        copyBtn.type = 'button'
+        copyBtn.className = 'mermaid-copy-btn'
+        copyBtn.textContent = 'Copiar'
+        copyBtn.setAttribute('aria-label', 'Copiar código-fonte do diagrama')
+        copyBtn.addEventListener('click', e => {
+          e.stopPropagation()
+          void copyToClipboard(copyBtn, source)
+        })
+
+        const diagram = document.createElement('div')
+        diagram.className = 'mermaid-diagram'
+        diagram.innerHTML = result.svg
+        diagram.setAttribute('role', 'button')
+        diagram.setAttribute('tabindex', '0')
+        diagram.setAttribute('aria-label', 'Abrir diagrama em tela cheia')
+        diagram.addEventListener('click', () => openFullscreen(diagram.innerHTML))
+        diagram.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+          openFullscreen(diagram.innerHTML)
+          }
+        })
+
+        container.append(copyBtn, diagram)
+        node.replaceWith(container)
+      } else {
+        const errorBox = document.createElement('div')
+        errorBox.className = 'mermaid-error'
+        errorBox.dataset.mermaidSource = source
+
+        const message = document.createElement('p')
+        message.className = 'mermaid-error-message'
+        message.textContent = `Erro ao renderizar diagrama Mermaid: ${result.message}`
+
+        const pre = document.createElement('pre')
+        pre.className = 'mermaid-error-source'
+        pre.textContent = result.source
+
+        errorBox.append(message, pre)
+        node.replaceWith(errorBox)
+      }
+    }
+  }
+
+  async function rerenderExistingDiagrams() {
+    mermaid.initialize({ startOnLoad: false, theme: mermaidTheme() })
+    for (const container of document.querySelectorAll<HTMLElement>('[data-mermaid-source]')) {
+      const source = container.dataset.mermaidSource
+      if (!source) continue
+      const result = await renderMermaidDiagram(mermaid, source)
+      if (result.status === 'ok') {
+        const diagram = container.querySelector('.mermaid-diagram')
+        if (diagram) diagram.innerHTML = result.svg
+      }
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => void processDiagrams())
+  } else {
+    void processDiagrams()
+  }
+
+  new MutationObserver(() => void rerenderExistingDiagrams()).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme'],
+  })
+</script>
+
+<style is:global>
+  .mermaid-container {
+    position: relative;
+  }
+
+  .mermaid-diagram {
+    cursor: zoom-in;
+  }
+
+  .mermaid-diagram:focus-visible {
+    outline: 2px solid var(--sl-color-accent);
+    outline-offset: 0.25rem;
+  }
+
+  .mermaid-copy-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    font-size: var(--sl-text-2xs, 0.75rem);
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.25rem;
+    background: var(--sl-color-gray-6);
+    color: var(--sl-color-gray-2);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .mermaid-container:hover .mermaid-copy-btn,
+  .mermaid-copy-btn:focus-visible {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mermaid-copy-btn {
+      transition: none;
+    }
+  }
+
+  .mermaid-error {
+    border: 1px solid var(--sl-color-red, #c53434);
+    border-radius: 0.5rem;
+    padding: 1rem;
+  }
+  .mermaid-error-message {
+    color: var(--sl-color-red, #c53434);
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+  }
+  .mermaid-error-source {
+    white-space: pre-wrap;
+    overflow-x: auto;
+    margin: 0;
+  }
+
+  .mermaid-fullscreen-dialog {
+    padding: 0;
+    border: none;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    background: var(--sl-color-bg, var(--sl-color-black));
+  }
+  .mermaid-fullscreen-dialog::backdrop {
+    background-color: var(--sl-color-backdrop-overlay, rgba(0, 0, 0, 0.6));
+  }
+
+  .mermaid-fullscreen-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.375rem;
+    background: var(--sl-color-gray-6);
+    color: var(--sl-color-gray-2);
+    width: 2.5rem;
+    height: 2.5rem;
+    cursor: pointer;
+  }
+
+  .mermaid-fullscreen-viewport {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    touch-action: none;
+    cursor: grab;
+  }
+  .mermaid-fullscreen-viewport:active {
+    cursor: grabbing;
+  }
+
+  .mermaid-fullscreen-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-origin: center center;
+  }
+</style>

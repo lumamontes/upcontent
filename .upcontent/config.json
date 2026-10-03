@@ -1,0 +1,82 @@
+{
+  "site": {
+    "title": "Upcontent",
+    "description": "Create a beautiful, customizable Starlight portal from your documentation repository.",
+    "url": "https://lumamontes.github.io/upcontent",
+    "logo": {
+      "src": ".upcontent/logo.svg",
+      "alt": "",
+      "replacesTitle": false
+    },
+    "favicon": ".upcontent/favicon.svg"
+  },
+  "repo": {
+    "url": "https://github.com/lumamontes/upcontent"
+  },
+  "theme": {
+    "customCss": [".upcontent/portal.css"]
+  },
+  "starlight": {
+    "social": [
+      {
+        "icon": "github",
+        "label": "GitHub",
+        "href": "https://github.com/lumamontes/upcontent"
+      }
+    ],
+    "tableOfContents": {
+      "minHeadingLevel": 2,
+      "maxHeadingLevel": 3
+    },
+    "lastUpdated": true,
+    "pagination": true,
+    "expressiveCode": {
+      "styleOverrides": {
+        "borderRadius": "0.6rem"
+      }
+    }
+  },
+  "navigation": {
+    "roots": [
+      "README.md",
+      "getting-started",
+      "guides",
+      "customization",
+      "deployment",
+      "SHOWCASE.mdx"
+    ],
+    "blocklist": {
+      "prefixes": [
+        ".git/",
+        ".scratch/",
+        ".agents/",
+        ".claude/",
+        ".cursor/",
+        ".codex/",
+        ".opencode/",
+        "node_modules/",
+        "dist/",
+        ".astro/",
+        "src/",
+        "server/",
+        "docs/agents/",
+        "docs/",
+        "test-fixtures/",
+        "external-consumer/",
+        "workflows/"
+      ],
+      "exact": [
+        "AGENTS.md",
+        "CLAUDE.md",
+        "CONTEXT.md",
+        "PRODUCT.md"
+      ]
+    },
+    "labelOverrides": {
+      "docs": "Project Docs"
+    }
+  },
+  "content": {
+    "titleField": "heading"
+  }
+}

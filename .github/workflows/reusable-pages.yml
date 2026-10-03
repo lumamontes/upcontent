@@ -1,0 +1,74 @@
+name: Reusable Upcontent Pages build
+
+on:
+  workflow_call:
+    inputs:
+      portal-repository:
+        description: Repository containing the Upcontent renderer.
+        required: false
+        type: string
+        default: lumamontes/upcontent
+      portal-ref:
+        description: Tag, branch, or commit of the Upcontent renderer.
+        required: false
+        type: string
+        default: main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out consumer repository
+        uses: actions/checkout@v5
+
+      - name: Check out Upcontent renderer
+        uses: actions/checkout@v5
+        with:
+          repository: ${{ inputs.portal-repository }}
+          ref: ${{ inputs.portal-ref }}
+          path: .upcontent-renderer
+
+      - name: Set up Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.20.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: .upcontent-renderer/pnpm-lock.yaml
+
+      - name: Install renderer dependencies
+        working-directory: .upcontent-renderer
+        run: pnpm install --frozen-lockfile
+
+      - name: Build portal
+        working-directory: .upcontent-renderer
+        run: make build CONTENT_PATH="${{ github.workspace }}" REPO_URL="https://github.com/${{ github.repository }}" BASE_PATH="${{ steps.pages.outputs.base_path }}" SITE_URL="${{ steps.pages.outputs.origin }}"
+
+      - name: Upload static artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: .upcontent-renderer/dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

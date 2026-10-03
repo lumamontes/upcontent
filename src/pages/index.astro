@@ -1,0 +1,20 @@
+---
+// Redireciona pro README (raiz do conteúdo) — Starlight não tem homepage
+// própria sem um index.md na collection.
+import { getCollection } from 'astro:content'
+import { PRODUCT_NAME } from '../lib/product-identity'
+
+const all = await getCollection('docs')
+const readme = all.find(e => e.id.toLowerCase() === 'readme')
+---
+
+{readme ? (
+  <meta http-equiv="refresh" content={`0;url=/${readme.id}/`} />
+) : (
+  <html lang="pt-BR">
+    <body>
+      <h1>{PRODUCT_NAME}</h1>
+      <p>Rode <code>make dev</code> para visualizar os documentos.</p>
+    </body>
+  </html>
+)}
