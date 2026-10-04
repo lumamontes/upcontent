@@ -45,7 +45,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
-           node-version: 22
+          node-version: 22
           cache: pnpm
           cache-dependency-path: .upcontent-renderer/pnpm-lock.yaml
 
