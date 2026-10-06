@@ -73,4 +73,10 @@ describe('resolveRelated', () => {
       { slug: 'guides/legacy', title: 'Legacy' },
     ])
   })
+
+  it('mantém links para README em consumers sem index dedicado', () => {
+    expect(resolveRelated(['README.markdown'], [{ id: 'index', data: { title: 'README' } }] as any)).toEqual([
+      { slug: '', title: 'README' },
+    ])
+  })
 })

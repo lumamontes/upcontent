@@ -23,7 +23,8 @@ export function resolveRelated(
   if (!related || related.length === 0) return []
   return related.flatMap(ref => {
     const normalized = stripMarkdownExtension(ref).toLowerCase()
-    const entry = allDocs.find(d => stripMarkdownExtension(d.id).toLowerCase() === normalized)
+    const candidates = normalized === 'readme' ? ['readme', 'index'] : [normalized]
+    const entry = candidates.flatMap(candidate => allDocs.filter(d => stripMarkdownExtension(d.id).toLowerCase() === candidate))[0]
     if (!entry) return []
     const entryId = stripMarkdownExtension(entry.id).toLowerCase()
     const slug = entryId === 'index' ? '' : entryId === 'readme' ? 'readme/' : entryId

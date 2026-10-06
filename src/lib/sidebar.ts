@@ -98,7 +98,7 @@ export function buildSidebar(docsRoot: string): SidebarEntry[] {
   const homepage = hasRootIndex(docsRoot) ? 'index' : 'readme'
   const configuredRoots = getPortalConfig().navigation?.roots
   const visibleTopLevel = configuredRoots
-    ? topLevel.filter(({ name, isDir }) => configuredRoots.includes(name) || (!isDir && toSidebarSlug(name, homepage) === 'index'))
+    ? topLevel.filter(({ name, isDir }) => configuredRoots.includes(name) || (!isDir && ['index', 'readme'].includes(toSidebarSlug(name, homepage))))
     : topLevel
 
   const entries: SidebarEntry[] = []
