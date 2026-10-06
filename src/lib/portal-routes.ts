@@ -21,8 +21,9 @@ function documentPath(path: string): string | undefined {
   if (MARKDOWN_EXTENSION.test(path)) {
     return existsSync(path) ? path : undefined
   }
+  const stem = path.endsWith(sep) ? path.slice(0, -sep.length) : path
   for (const extension of MARKDOWN_EXTENSIONS) {
-    if (existsSync(`${path}${extension}`)) return `${path}${extension}`
+    if (existsSync(`${stem}${extension}`)) return `${stem}${extension}`
     if (path.endsWith('/') && existsSync(`${path}index${extension}`)) return `${path}index${extension}`
   }
   return undefined

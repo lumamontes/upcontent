@@ -26,6 +26,7 @@ const related = entry.data.related?.length
       await getCollection('docs'),
     )
   : []
+const baseUrl = import.meta.env.BASE_URL
 ---
 
 <Default><slot /></Default>
@@ -53,7 +54,7 @@ const related = entry.data.related?.length
        <h2>Related documents</h2>
       <ul>
         {related.map(doc => (
-          <li><a href={`/${doc.slug}`}>{doc.title}</a></li>
+          <li><a href={`${baseUrl}${doc.slug}`}>{doc.title}</a></li>
         ))}
       </ul>
     </section>

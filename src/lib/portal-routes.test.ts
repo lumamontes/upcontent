@@ -36,6 +36,11 @@ describe('resolveMarkdownLink', () => {
     expect(resolveMarkdownLink('index.md#Overview', join(root, 'guides/current.md'), root)).toBe('/guides/#Overview')
   })
 
+  it('resolves trailing-slash links to sibling Markdown documents', () => {
+    const root = fixture(['README.md', 'showcase.md'])
+    expect(resolveMarkdownLink('showcase/', join(root, 'README.md'), root)).toBe('/showcase/')
+  })
+
   it('normalizes route casing to match content collection ids', () => {
     const root = fixture(['README.md', 'Guides/Getting-Started.md'])
     expect(resolveMarkdownLink('Guides/Getting-Started.md', join(root, 'README.md'), root)).toBe('/guides/getting-started/')
