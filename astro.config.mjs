@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'node:url'
-import { cpSync, existsSync, mkdirSync, statSync } from 'node:fs'
+import { cpSync, existsSync, mkdirSync, rmSync, statSync } from 'node:fs'
 import { basename, resolve, sep } from 'node:path'
 import { unified } from '@astrojs/markdown-remark'
 import sitemap from '@astrojs/sitemap'
@@ -18,6 +18,18 @@ import { PRODUCT_NAME, PRODUCT_TAGLINE } from './src/lib/product-identity.ts'
 
 const docsRoot = fileURLToPath(new URL('./src/content/docs', import.meta.url))
 const portalConfig = getPortalConfig()
+
+function copyContentAssetDirectory(assetPath) {
+  const source = resolve(docsRoot, assetPath)
+  if (!existsSync(source) || !statSync(source).isDirectory()) return
+
+  const target = resolve(process.cwd(), 'public', assetPath)
+  rmSync(target, { force: true, recursive: true })
+  mkdirSync(resolve(target, '..'), { recursive: true })
+  cpSync(source, target, { recursive: true })
+}
+
+copyContentAssetDirectory('assets/readme')
 
 function resolvePortalAsset(assetPath) {
   if (!assetPath || assetPath.startsWith('http')) return assetPath

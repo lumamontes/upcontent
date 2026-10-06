@@ -3,7 +3,7 @@ REPO_URL ?=
 BASE_PATH ?=
 SITE_URL ?=
 
-.PHONY: dev build preview check-external
+.PHONY: dev build preview check-golden check-external
 
 define prepare-content
 	@test -d "$(CONTENT_PATH)" || (printf 'Content path does not exist: %s\n' "$(CONTENT_PATH)" >&2; exit 1)
@@ -22,6 +22,10 @@ build:
 preview:
 	$(MAKE) build CONTENT_PATH="$(CONTENT_PATH)" REPO_URL="$(REPO_URL)" BASE_PATH="$(BASE_PATH)" SITE_URL="$(SITE_URL)"
 	pnpm exec astro preview
+
+check-golden:
+	$(MAKE) build CONTENT_PATH="$(CURDIR)"
+	node scripts/verify-golden-build.mjs
 
 check-external:
 	$(MAKE) build CONTENT_PATH="$(CURDIR)/test-fixtures/external-consumer" REPO_URL="https://github.com/example/external-consumer"

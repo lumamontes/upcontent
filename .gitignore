@@ -2,6 +2,7 @@ node_modules
 dist
 public/portal-assets
 public/upcontent-assets
+public/assets/readme
 src/assets/consumer-logo.svg
 .astro
 src/content/docs

@@ -13,6 +13,7 @@ Use this checklist before opening a pull request or publishing a consumer reposi
 pnpm test
 pnpm check
 make build CONTENT_PATH=.
+make check-golden
 make check-external
 git diff --check
 ```

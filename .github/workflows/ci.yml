@@ -40,10 +40,10 @@ jobs:
       - name: Run Astro diagnostics
         run: pnpm check
 
-      - name: Build golden consumer
-        run: make build CONTENT_PATH=.
-
       - name: Check golden artifact
+        run: make check-golden
+
+      - name: Check golden runtime assets
         run: |
           test -f dist/index.html
           test -f dist/pagefind/pagefind.js
