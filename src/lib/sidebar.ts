@@ -113,8 +113,8 @@ export function buildSidebar(docsRoot: string): SidebarEntry[] {
     }
   }
 
-  // A homepage fica fixa em primeiro, com o label configurável "Home" por
-  // padrão, sem competir alfabeticamente com as outras páginas.
+  // A homepage fica fixa em primeiro, com o label configurável, sem competir
+  // alfabeticamente com as outras páginas.
   const homepageIndex = entries.findIndex(e => !isSidebarGroup(e) && e.slug === 'index')
   const homepageEntry = homepageIndex >= 0 ? entries.splice(homepageIndex, 1)[0] : undefined
   const sorted = sortEntries(entries)

@@ -78,7 +78,7 @@
     },
     "labelOverrides": {
       "docs": "Project Docs",
-      "readme": "Repository README"
+      "index": "Getting Started"
     }
   },
   "content": {
