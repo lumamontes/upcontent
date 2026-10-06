@@ -21,6 +21,7 @@ const sitemap = readFileSync('dist/sitemap-0.xml', 'utf8')
 if (!sitemap.includes('<loc>https://docs.example.com/</loc>')) throw new Error('External consumer root route is missing from sitemap')
 if (sitemap.includes('/noindex/')) throw new Error('External consumer noindex page leaked into sitemap')
 if (existsSync('dist/forbidden/index.html')) throw new Error('External consumer blocklist leaked forbidden.md')
+if (existsSync('dist/assets/readme')) throw new Error('Golden README assets leaked into external consumer build')
 if (existsSync('dist/upcontent-renderer/readme/index.html')) {
   throw new Error('External consumer build leaked renderer checkout content')
 }

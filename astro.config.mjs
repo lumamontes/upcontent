@@ -21,9 +21,12 @@ const portalConfig = getPortalConfig()
 
 function copyContentAssetDirectory(assetPath) {
   const source = resolve(docsRoot, assetPath)
-  if (!existsSync(source) || !statSync(source).isDirectory()) return
-
   const target = resolve(process.cwd(), 'public', assetPath)
+  if (!existsSync(source) || !statSync(source).isDirectory()) {
+    rmSync(target, { force: true, recursive: true })
+    return
+  }
+
   rmSync(target, { force: true, recursive: true })
   mkdirSync(resolve(target, '..'), { recursive: true })
   cpSync(source, target, { recursive: true })
