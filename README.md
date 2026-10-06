@@ -1,8 +1,3 @@
----
-heading: Upcontent
-description: Turn a documentation repository into a fast, searchable, customizable static portal.
----
-
 <div align="center">
 
 # Upcontent

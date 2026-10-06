@@ -42,7 +42,6 @@
   "navigation": {
     "roots": [
       "index.md",
-      "README.md",
       "getting-started",
       "guides",
       "customization",
@@ -73,7 +72,8 @@
         "AGENTS.md",
         "CLAUDE.md",
         "CONTEXT.md",
-        "PRODUCT.md"
+        "PRODUCT.md",
+        "README.md"
       ]
     },
     "labelOverrides": {
