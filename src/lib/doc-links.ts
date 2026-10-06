@@ -29,8 +29,8 @@ export function resolveRelated(
       .some(path => stripMarkdownExtension(path).toLowerCase() === candidate)))[0]
     if (!entry) return []
     const entryId = stripMarkdownExtension(entry.id).toLowerCase()
-    const slug = entryId === 'index' ? '' : entryId === 'readme' ? 'readme/' : entryId
-    const title = (entry.data as Record<string, unknown>).title as string | undefined ?? slug
+    const slug = entryId === 'index' ? '' : entryId === 'readme' ? 'readme/' : `${entryId}/`
+    const title = (entry.data as Record<string, unknown>).title as string | undefined ?? entryId
     return [{ slug, title }]
   })
 }

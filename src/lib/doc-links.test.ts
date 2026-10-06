@@ -41,7 +41,7 @@ describe('resolveRelated', () => {
     const result = resolveRelated(['domains/foo/prd'], allDocs as any)
     expect(result).toHaveLength(1)
     expect(result[0].title).toBe('Foo PRD')
-    expect(result[0].slug).toBe('domains/foo/prd')
+    expect(result[0].slug).toBe('domains/foo/prd/')
   })
 
   it('resolve entry referenciado com extensão .md', () => {
@@ -70,7 +70,7 @@ describe('resolveRelated', () => {
     expect(resolveRelated(['index.md', 'README.markdown', 'guides/legacy.mdx'], docs as any)).toEqual([
       { slug: '', title: 'Home' },
       { slug: 'readme/', title: 'README' },
-      { slug: 'guides/legacy', title: 'Legacy' },
+      { slug: 'guides/legacy/', title: 'Legacy' },
     ])
   })
 

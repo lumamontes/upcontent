@@ -163,8 +163,8 @@ export default defineConfig({
     processor: unified({
       remarkPlugins: [
         remarkStripDuplicateTitle,
-        [remarkWikiLinks, { contentRoot: docsRoot, basePath: import.meta.env.BASE_URL, failOnBrokenLinks: true }],
-        [remarkDocumentLinks, { contentRoot: docsRoot, basePath: import.meta.env.BASE_URL }],
+         [remarkWikiLinks, { contentRoot: docsRoot, basePath: base || '/', failOnBrokenLinks: true }],
+         [remarkDocumentLinks, { contentRoot: docsRoot, basePath: base || '/' }],
         remarkMermaid,
         remarkStructuredDataPreview,
       ],
