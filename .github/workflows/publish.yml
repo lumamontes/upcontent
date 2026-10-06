@@ -33,7 +33,7 @@ jobs:
 
       - name: Require npm Trusted Publishing support
         run: |
-          node -e "const [major, minor] = process.argv[1].split('.').map(Number); if (major < 11 || (major === 11 && minor < 5)) process.exit(1)" "$(npm --version)"
+          node -e "const [major, minor, patch] = process.argv[1].split('.').map(Number); if (major < 11 || (major === 11 && (minor < 5 || (minor === 5 && patch < 1)))) process.exit(1)" "$(npm --version)"
 
       - name: Verify tag matches package version
         env:
@@ -58,6 +58,9 @@ jobs:
 
       - name: Inspect package contents
         run: npm pack --dry-run
+
+      - name: Check diff hygiene
+        run: git diff --check
 
       - name: Publish package
         run: npm publish --access public
