@@ -68,7 +68,7 @@ The optional fields below cover navigation, Starlight presentation, and content 
     }
   },
   "navigation": {
-    "roots": ["README.md", "guides"],
+    "roots": ["index.md", "guides"],
     "labelOverrides": { "api": "API reference" },
     "blocklist": {
       "exact": ["notes.md"],

@@ -86,6 +86,7 @@ function portalDocsLoader(): Loader {
       const homepage = hasRootIndex(docsBasePath) ? 'index' : 'readme'
       const patterns = [
         '**/[^_]*.{markdown,mdown,mkdn,mkd,mdwn,md,mdx}',
+        ...(homepage === 'index' ? ['![rR][eE][aA][dD][mM][eE].{markdown,mdown,mkdn,mkd,mdwn,md,mdx}'] : []),
         ...getBlocklist().map(blocked => `!${toCaseInsensitiveGlob(blocked)}${blocked.endsWith('/') ? '**' : ''}`),
       ]
       const wrappedContext: LoaderContext = {

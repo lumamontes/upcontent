@@ -98,8 +98,11 @@ export function buildSidebar(docsRoot: string): SidebarEntry[] {
   const homepage = hasRootIndex(docsRoot) ? 'index' : 'readme'
   const configuredRoots = getPortalConfig().navigation?.roots
   const visibleTopLevel = configuredRoots
-    ? topLevel.filter(({ name, isDir }) => configuredRoots.includes(name) || (!isDir && ['index', 'readme'].includes(toSidebarSlug(name, homepage))))
-    : topLevel
+    ? topLevel.filter(({ name, isDir }) =>
+      !(homepage === 'index' && !isDir && toSidebarSlug(name, homepage) === 'readme')
+      && (configuredRoots.includes(name) || (!isDir && ['index', 'readme'].includes(toSidebarSlug(name, homepage))))
+    )
+    : topLevel.filter(({ name, isDir }) => !(homepage === 'index' && !isDir && toSidebarSlug(name, homepage) === 'readme'))
 
   const entries: SidebarEntry[] = []
   for (const { name, isDir } of visibleTopLevel) {
@@ -118,5 +121,5 @@ export function buildSidebar(docsRoot: string): SidebarEntry[] {
   const homepageIndex = entries.findIndex(e => !isSidebarGroup(e) && e.slug === 'index')
   const homepageEntry = homepageIndex >= 0 ? entries.splice(homepageIndex, 1)[0] : undefined
   const sorted = sortEntries(entries)
-  return homepageEntry ? [{ slug: 'index', label: resolveLabel(homepage, 'Home') }, ...sorted] : sorted
+  return homepageEntry ? [{ slug: 'index', label: resolveLabel(homepage, 'Getting Started') }, ...sorted] : sorted
 }

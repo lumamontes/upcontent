@@ -98,7 +98,7 @@ describe('buildSidebar', () => {
     mountFs(ROOT, { 'index.md': null, guides: { 'guide.md': null } })
 
     const sidebar = buildSidebar(ROOT)
-    expect(sidebar[0]).toEqual({ slug: 'index', label: 'Home' })
+    expect(sidebar[0]).toEqual({ slug: 'index', label: 'Getting Started' })
   })
 
   it('ignora dotfiles e dot-directories', () => {
@@ -110,13 +110,13 @@ describe('buildSidebar', () => {
   it('ignora arquivos bloqueados (floor hardcoded)', () => {
     mountFs(ROOT, { 'CLAUDE.md': null, 'README.md': null })
     const sidebar = buildSidebar(ROOT)
-    expect(sidebar).toEqual([{ slug: 'index', label: 'Home' }])
+    expect(sidebar).toEqual([{ slug: 'index', label: 'Getting Started' }])
   })
 
-  it('fixa o README em primeiro, relabelado como Home, na frente de tudo', () => {
+  it('fixa o README em primeiro, relabelado como Getting Started, na frente de tudo', () => {
     mountFs(ROOT, { 'README.md': null, domains: { historico: { 'a.md': null } } })
     const sidebar = buildSidebar(ROOT) as { label: string }[]
-    expect(sidebar[0]).toEqual({ slug: 'index', label: 'Home' })
+    expect(sidebar[0]).toEqual({ slug: 'index', label: 'Getting Started' })
     expect(sidebar[1].label).toBe('Historico')
   })
 
@@ -130,11 +130,11 @@ describe('buildSidebar', () => {
     expect(sidebar[0]).toEqual({ slug: 'index', label: 'Docs' })
   })
 
-  it('mantém README separado quando index.md é a homepage', () => {
+  it('não publica README quando index.md é a homepage', () => {
     mountFs(ROOT, { 'README.md': null, 'index.markdown': null, domains: { historico: { 'a.md': null } } })
     const sidebar = buildSidebar(ROOT) as { slug?: string; label?: string }[]
-    expect(sidebar[0]).toEqual({ slug: 'index', label: 'Home' })
-    expect(sidebar).toContainEqual({ slug: 'readme', label: 'Readme' })
+    expect(sidebar[0]).toEqual({ slug: 'index', label: 'Getting Started' })
+    expect(sidebar).not.toContainEqual({ slug: 'readme', label: 'Readme' })
   })
 
   it('aplica labelOverrides do .upcontent/config.json em cima do Title Case', () => {
