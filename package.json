@@ -1,7 +1,7 @@
 {
   "name": "upcontent",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "packageManager": "pnpm@10.20.0",
   "bin": {
     "upcontent": "scripts/upcontent-cli.mjs"
