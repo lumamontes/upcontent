@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs'
 import { resolve, sep } from 'node:path'
 import { visit } from 'unist-util-visit'
 import { PRODUCT_NAME } from './product-identity'
+import { toPortalRoute } from './portal-routes'
 
 interface MdastText {
   type: 'text'
@@ -22,6 +23,7 @@ interface MdastParent {
 
 interface WikiLinkOptions {
   contentRoot?: string
+  basePath?: string
   failOnBrokenLinks?: boolean
 }
 
@@ -36,15 +38,15 @@ function slugifyHeading(heading: string): string {
 // Constrói a URL a partir da referência crua entre colchetes: [[#heading]] vira
 // anchor local; [[page]] vira path; [[page#heading]] combina os dois — path e
 // heading são fatiados (slugify) separadamente pra não perder o separador "#".
-function buildUrl(ref: string): string {
+function buildUrl(ref: string, basePath = '/'): string {
   if (ref.startsWith('#')) return '#' + slugifyHeading(ref.slice(1))
   const hashIndex = ref.indexOf('#')
   if (hashIndex >= 0) {
     const pagePart = ref.slice(0, hashIndex)
     const headingPart = ref.slice(hashIndex + 1)
-    return '/' + slugifyPath(pagePart) + '#' + slugifyHeading(headingPart)
+    return `${toPortalRoute(`${slugifyPath(pagePart)}.md`, basePath)}#${slugifyHeading(headingPart)}`
   }
-  return '/' + slugifyPath(ref)
+  return toPortalRoute(`${slugifyPath(ref)}.md`, basePath)
 }
 
 function pagePartOf(ref: string): string {
@@ -89,7 +91,7 @@ export function remarkWikiLinks(options: WikiLinkOptions = {}) {
           const source = file.path ? ` in ${file.path}` : ''
           throw new Error(`[${PRODUCT_NAME}] Broken wiki link [[${inner}]]${source}`)
         }
-        const url = buildUrl(ref)
+        const url = buildUrl(ref, options.basePath)
         parts.push({ type: 'link', url, title: null, children: [{ type: 'text', value: label }] })
         lastIndex = match.index + match[0].length
       }

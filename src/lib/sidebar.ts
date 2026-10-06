@@ -35,6 +35,7 @@ function sortEntries(entries: SidebarEntry[]): SidebarEntry[] {
 
 function toSidebarSlug(relativePath: string): string {
   const slug = relativePath.replace(/\.mdx?$/i, '').toLowerCase()
+  if (slug === 'readme') return 'index'
   return slug.endsWith('/index') ? slug.slice(0, -'/index'.length) : slug
 }
 
@@ -106,8 +107,8 @@ export function buildSidebar(docsRoot: string): SidebarEntry[] {
   // README fica fixo em primeiro, relabelado como "Home" — é a landing
   // page do portal, não deveria competir alfabeticamente nem aparecer com
   // o nome literal do arquivo.
-  const readmeIndex = entries.findIndex(e => !isSidebarGroup(e) && e.slug === 'readme')
+  const readmeIndex = entries.findIndex(e => !isSidebarGroup(e) && e.slug === 'index')
   const readme = readmeIndex >= 0 ? entries.splice(readmeIndex, 1)[0] : undefined
   const sorted = sortEntries(entries)
-  return readme ? [{ slug: 'readme', label: 'Home' }, ...sorted] : sorted
+  return readme ? [{ slug: 'index', label: 'Home' }, ...sorted] : sorted
 }

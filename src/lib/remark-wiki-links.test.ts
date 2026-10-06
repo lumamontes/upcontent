@@ -28,13 +28,13 @@ function renderStrict(markdown: string): string {
 describe('remarkWikiLinks', () => {
   it('resolve [[page]] simples pra /page', () => {
     const html = render('Veja [[backend/plan]] pra mais detalhes.')
-    expect(html).toContain('href="/backend/plan"')
+    expect(html).toContain('href="/backend/plan/"')
     expect(html).toContain('>backend/plan<')
   })
 
   it('resolve [[page#heading]] combinando path e anchor', () => {
     const html = render('Ver [[DESIGN-licencas#Impact Summary]].')
-    expect(html).toContain('href="/design-licencas#impact-summary"')
+    expect(html).toContain('href="/design-licencas/#impact-summary"')
   })
 
   it('resolve [[#heading]] como anchor local, sem path', () => {
@@ -44,13 +44,13 @@ describe('remarkWikiLinks', () => {
 
   it('resolve [[page|label]] usando o label como texto do link', () => {
     const html = render('Veja [[backend/plan|o plano]] aqui.')
-    expect(html).toContain('href="/backend/plan"')
+    expect(html).toContain('href="/backend/plan/"')
     expect(html).toContain('>o plano<')
   })
 
   it('normaliza espaços e maiúsculas no path', () => {
     const html = render('Ver [[Meu Documento]].')
-    expect(html).toContain('href="/meu-documento"')
+    expect(html).toContain('href="/meu-documento/"')
   })
 
   it('não afeta texto sem wiki links', () => {
@@ -61,8 +61,8 @@ describe('remarkWikiLinks', () => {
 
   it('resolve múltiplos wiki links na mesma linha', () => {
     const html = render('Ver [[a]] e também [[b]].')
-    expect(html).toContain('href="/a"')
-    expect(html).toContain('href="/b"')
+    expect(html).toContain('href="/a/"')
+    expect(html).toContain('href="/b/"')
   })
 
   // não corrompe rótulos de diagrama Mermaid que usam [[texto]] (sintaxe de subroutine node) —
@@ -78,12 +78,12 @@ describe('remarkWikiLinks', () => {
   })
 
   it('aceita um wiki link que aponta para um documento do consumer', () => {
-    expect(renderStrict('Veja [[README]].')).toContain('href="/readme"')
+    expect(renderStrict('Veja [[README]].')).toContain('href="/"')
   })
 
   it('mantém os formatos suportados sob validação estrita', () => {
     expect(renderStrict('[[#Product]] [[README#Product]] [[README|início]]')).toContain('href="#product"')
-    expect(renderStrict('[[#Product]] [[README#Product]] [[README|início]]')).toContain('href="/readme#product"')
+    expect(renderStrict('[[#Product]] [[README#Product]] [[README|início]]')).toContain('href="/#product"')
   })
 
   it('rejeita referências a arquivos que não são documentos', () => {

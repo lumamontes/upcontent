@@ -2,7 +2,8 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineCollection } from 'astro:content'
 import { z } from 'astro/zod'
-import { docsSchema } from '@astrojs/starlight/schema'
+import { docsSchema, i18nSchema } from '@astrojs/starlight/schema'
+import { i18nLoader } from '@astrojs/starlight/loaders'
 import { glob } from 'astro/loaders'
 import type { Loader, LoaderContext } from 'astro/loaders'
 import { getBlocklist, isBlocked, toRelativeDocPath, toTitleCase } from './lib/content-blocklist'
@@ -62,6 +63,12 @@ export function resolveTitle(relativeFilePath: string, data: Record<string, unkn
   data.title = toTitleCase(withoutExt)
 }
 
+export function toCollectionId(relativeFilePath: string): string {
+  const normalized = relativeFilePath.split(path.sep).join('/').replace(/\.mdx?$/i, '').toLowerCase()
+  if (normalized === 'readme') return 'index'
+  return normalized.endsWith('/index') ? normalized.slice(0, -'/index'.length) : normalized
+}
+
 function toCaseInsensitiveGlob(value: string): string {
   return value.replace(/[A-Za-z]/g, character => `[${character.toLowerCase()}${character.toUpperCase()}]`)
 }
@@ -87,7 +94,7 @@ function portalDocsLoader(): Loader {
           return context.parseData(props)
         },
       }
-      await glob({ base: docsBasePath, pattern: patterns }).load(wrappedContext)
+      await glob({ base: docsBasePath, pattern: patterns, generateId: ({ entry }) => toCollectionId(entry) }).load(wrappedContext)
     },
   }
 }
@@ -96,5 +103,9 @@ export const collections = {
   docs: defineCollection({
     loader: portalDocsLoader(),
     schema: docsSchema({ extend: domainFieldsSchema }),
+  }),
+  i18n: defineCollection({
+    loader: i18nLoader(),
+    schema: i18nSchema(),
   }),
 }

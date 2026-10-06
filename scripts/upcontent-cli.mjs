@@ -56,7 +56,7 @@ on:
 
 jobs:
   publish:
-     uses: lumamontes/upcontent/.github/workflows/reusable-pages.yml@main
+    uses: lumamontes/upcontent/.github/workflows/reusable-pages.yml@main
     permissions:
       contents: read
       pages: write
@@ -103,9 +103,7 @@ else if (command === 'dev') {
   process.exitCode = run('make', ['dev', `CONTENT_PATH=${root}`]) ? 0 : 1
 }
 else if (command === 'check') {
-  const passed = run('pnpm', ['test'])
-    && run('pnpm', ['check'])
-    && run('make', ['build', `CONTENT_PATH=${root}`])
+  const passed = run('make', ['build', `CONTENT_PATH=${root}`])
   process.exitCode = passed ? 0 : 1
 }
 else {

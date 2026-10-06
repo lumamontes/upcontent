@@ -39,9 +39,10 @@ If your Markdown already lives in a GitHub repository, the flow is:
 ```sh
 pnpm dlx upcontent init
 pnpm dlx upcontent dev
+pnpm dlx upcontent check
 ```
 
-The first command creates `.upcontent/` and a GitHub Pages workflow. The second starts a local portal using the repository you are already in. You do not need to clone the Upcontent renderer into your documentation repository.
+The first command creates `.upcontent/` and a GitHub Pages workflow. The second starts a local portal using the repository you are already in. The third builds the consumer portal and validates the generated site. You do not need to clone the Upcontent renderer into your documentation repository.
 
 Push the generated workflow and your documentation is published as a static site. The source repository remains the source of truth; Upcontent does not require a database, a companion server, or a new authoring system.
 

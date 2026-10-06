@@ -25,5 +25,5 @@ preview:
 
 check-external:
 	$(MAKE) build CONTENT_PATH="$(CURDIR)/test-fixtures/external-consumer" REPO_URL="https://github.com/example/external-consumer"
-	@test -f dist/readme/index.html
+	@test -f dist/index.html
 	node scripts/verify-external-build.mjs

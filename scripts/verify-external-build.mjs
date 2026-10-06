@@ -1,6 +1,6 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 
-const html = readFileSync('dist/readme/index.html', 'utf8')
+const html = readFileSync('dist/index.html', 'utf8')
 const required = [
   'External Consumer',
   'https://github.com/example/external-consumer',

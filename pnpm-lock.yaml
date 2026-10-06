@@ -29,6 +29,9 @@ importers:
       papaparse:
         specifier: ^5.7.0
         version: 5.7.0
+      unified:
+        specifier: ^11.0.5
+        version: 11.0.5
       unist-util-visit:
         specifier: ^5.0.0
         version: 5.1.0
@@ -57,9 +60,6 @@ importers:
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
-      unified:
-        specifier: ^11.0.5
-        version: 11.0.5
       vitest:
         specifier: ^2.0.0
         version: 2.1.9(@types/node@24.13.5)(lightningcss@1.33.0)

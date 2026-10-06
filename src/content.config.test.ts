@@ -6,7 +6,7 @@ vi.mock('node:fs', () => ({
 }))
 
 import * as fs from 'node:fs'
-import { domainFieldsSchema, isBlocked, resolveTitle, toRelativeDocPath } from './content.config'
+import { domainFieldsSchema, isBlocked, resolveTitle, toCollectionId, toRelativeDocPath } from './content.config'
 import { _resetPortalConfigCache } from './lib/portal-config'
 
 beforeEach(() => {
@@ -181,5 +181,19 @@ describe('toRelativeDocPath', () => {
 
   it('mantém o path como está se o prefixo não estiver presente', () => {
     expect(toRelativeDocPath('RULES.md')).toBe('RULES.md')
+  })
+})
+
+describe('toCollectionId', () => {
+  it('maps the root README to the Starlight homepage id', () => {
+    expect(toCollectionId('README.md')).toBe('index')
+  })
+
+  it('normalizes document ids while preserving nested routes', () => {
+    expect(toCollectionId('Guides/Getting-Started.mdx')).toBe('guides/getting-started')
+  })
+
+  it('normalizes nested index documents to their directory route', () => {
+    expect(toCollectionId('customization/index.md')).toBe('customization')
   })
 })

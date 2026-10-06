@@ -98,13 +98,13 @@ describe('buildSidebar', () => {
   it('ignora arquivos bloqueados (floor hardcoded)', () => {
     mountFs(ROOT, { 'CLAUDE.md': null, 'README.md': null })
     const sidebar = buildSidebar(ROOT)
-    expect(sidebar).toEqual([{ slug: 'readme', label: 'Home' }])
+    expect(sidebar).toEqual([{ slug: 'index', label: 'Home' }])
   })
 
   it('fixa o README em primeiro, relabelado como Home, na frente de tudo', () => {
     mountFs(ROOT, { 'README.md': null, domains: { historico: { 'a.md': null } } })
     const sidebar = buildSidebar(ROOT) as { label: string }[]
-    expect(sidebar[0]).toEqual({ slug: 'readme', label: 'Home' })
+    expect(sidebar[0]).toEqual({ slug: 'index', label: 'Home' })
     expect(sidebar[1].label).toBe('Historico')
   })
 

@@ -9,6 +9,7 @@ import { rehypeCallouts } from './src/lib/rehype-callouts.ts'
 import { remarkStripDuplicateTitle } from './src/lib/remark-strip-duplicate-title.ts'
 import { remarkStructuredDataPreview } from './src/lib/remark-structured-data-preview.ts'
 import { remarkWikiLinks } from './src/lib/remark-wiki-links.ts'
+import { remarkDocumentLinks } from './src/lib/remark-doc-links.ts'
 import { getPortalConfig } from './src/lib/portal-config.ts'
 import { buildSidebar } from './src/lib/sidebar.ts'
 import { PRODUCT_NAME, PRODUCT_TAGLINE } from './src/lib/product-identity.ts'
@@ -87,19 +88,6 @@ function remarkMermaid() {
   }
 }
 
-// Rehype plugin: strip .md suffix from internal hrefs so links resolve correctly
-function rehypeStripMdLinks() {
-  return (tree) => {
-    visit(tree, 'element', (node) => {
-      if (node.tagName !== 'a') return
-      const href = node.properties?.href
-      if (typeof href !== 'string') return
-      if (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('#')) return
-      if (href.endsWith('.md')) node.properties.href = href.slice(0, -3)
-    })
-  }
-}
-
 export default defineConfig({
   output: 'static',
   site,
@@ -127,11 +115,12 @@ export default defineConfig({
     processor: unified({
       remarkPlugins: [
         remarkStripDuplicateTitle,
-        [remarkWikiLinks, { contentRoot: docsRoot, failOnBrokenLinks: true }],
+        [remarkWikiLinks, { contentRoot: docsRoot, basePath: import.meta.env.BASE_URL, failOnBrokenLinks: true }],
+        [remarkDocumentLinks, { contentRoot: docsRoot, basePath: import.meta.env.BASE_URL }],
         remarkMermaid,
         remarkStructuredDataPreview,
       ],
-      rehypePlugins: [rehypeCallouts, rehypeStripMdLinks],
+      rehypePlugins: [rehypeCallouts],
     }),
   },
 })
