@@ -1,0 +1,59 @@
+name: Publish npm package
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.20.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - name: Verify npm version
+        run: npm --version
+
+      - name: Verify tag matches package version
+        env:
+          TAG_VERSION: ${{ github.ref_name }}
+        run: |
+          test "${TAG_VERSION#v}" = "$(node -p "require('./package.json').version")"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tests
+        run: pnpm test
+
+      - name: Run Astro diagnostics
+        run: pnpm check
+
+      - name: Validate golden consumer
+        run: make check-golden
+
+      - name: Validate external consumer
+        run: make check-external
+
+      - name: Inspect package contents
+        run: npm pack --dry-run
+
+      - name: Publish package
+        run: npm publish --access public

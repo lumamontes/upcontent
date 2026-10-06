@@ -11,6 +11,7 @@ Upcontent produces static files. The deployment job only needs to build the cont
 
 - [GitHub Pages](github-pages/): use the included workflow and repository settings.
 - [Other static hosts](static-hosts/): publish `dist/` to Netlify, Vercel, S3, or another file host.
+- [Release the npm package](npm/): publish versioned package releases through GitHub Actions.
 - [Environment variables](../customization/environment/): set the URL and base path for the host.
 
 ## Before publishing
