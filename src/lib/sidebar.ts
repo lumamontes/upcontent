@@ -1,5 +1,6 @@
 import { readdirSync, statSync } from 'node:fs'
 import { isBlocked, resolveLabel } from './content-blocklist'
+import { hasRootIndex } from './homepage'
 import { getPortalConfig } from './portal-config'
 
 // Diretórios de topo que existem só como agrupamento estrutural do
@@ -33,9 +34,10 @@ function sortEntries(entries: SidebarEntry[]): SidebarEntry[] {
   return [...entries].sort((a, b) => labelOf(a).localeCompare(labelOf(b), 'pt-BR'))
 }
 
-function toSidebarSlug(relativePath: string): string {
+function toSidebarSlug(relativePath: string, homepage: 'index' | 'readme'): string {
   const slug = relativePath.replace(/\.mdx?$/i, '').toLowerCase()
-  if (slug === 'readme') return 'index'
+  if (slug === homepage) return 'index'
+  if (slug === 'readme') return 'readme'
   return slug.endsWith('/index') ? slug.slice(0, -'/index'.length) : slug
 }
 
@@ -59,17 +61,17 @@ function listVisible(absDir: string, relPath: string): { name: string; isDir: bo
 // (não só o de topo) recebe label em Title Case, porque o autogenerate
 // nativo do Starlight usa o nome literal da pasta em todo nível abaixo do
 // primeiro e não expõe nenhum jeito de sobrescrever isso via config.
-function buildDir(absDir: string, relPath: string): SidebarEntry[] {
+function buildDir(absDir: string, relPath: string, homepage: 'index' | 'readme'): SidebarEntry[] {
   const entries: SidebarEntry[] = []
   for (const { name, isDir } of listVisible(absDir, relPath)) {
     const rel = relPath ? `${relPath}/${name}` : name
     if (isDir) {
-      const items = buildDir(`${absDir}/${name}`, rel)
+      const items = buildDir(`${absDir}/${name}`, rel, homepage)
       if (items.length > 0) entries.push({ label: resolveLabel(name), items })
     } else if (/\.mdx?$/i.test(name)) {
       // Slug do Starlight = path relativo ao content root, sem extensão,
       // minúsculo (ver ADR/nota em Footer.astro — mesmo mecanismo).
-      entries.push({ slug: toSidebarSlug(rel) })
+      entries.push({ slug: toSidebarSlug(rel, homepage) })
     }
   }
   return sortEntries(entries)
@@ -88,6 +90,7 @@ export function buildSidebar(docsRoot: string): SidebarEntry[] {
   }
 
   const configuredRoots = getPortalConfig().navigation?.roots
+  const homepage = hasRootIndex(docsRoot) ? 'index' : 'readme'
   const visibleTopLevel = configuredRoots
     ? topLevel.filter(({ name }) => configuredRoots.includes(name))
     : topLevel
@@ -95,20 +98,19 @@ export function buildSidebar(docsRoot: string): SidebarEntry[] {
   const entries: SidebarEntry[] = []
   for (const { name, isDir } of visibleTopLevel) {
     if (isDir && FLATTEN_TOP_LEVEL_DIRS.has(name)) {
-      entries.push(...buildDir(`${docsRoot}/${name}`, name))
+      entries.push(...buildDir(`${docsRoot}/${name}`, name, homepage))
     } else if (isDir) {
-      const items = buildDir(`${docsRoot}/${name}`, name)
+      const items = buildDir(`${docsRoot}/${name}`, name, homepage)
       if (items.length > 0) entries.push({ label: resolveLabel(name), items })
     } else if (/\.mdx?$/i.test(name)) {
-      entries.push({ slug: toSidebarSlug(name) })
+      entries.push({ slug: toSidebarSlug(name, homepage) })
     }
   }
 
-  // README fica fixo em primeiro, relabelado como "Home" — é a landing
-  // page do portal, não deveria competir alfabeticamente nem aparecer com
-  // o nome literal do arquivo.
-  const readmeIndex = entries.findIndex(e => !isSidebarGroup(e) && e.slug === 'index')
-  const readme = readmeIndex >= 0 ? entries.splice(readmeIndex, 1)[0] : undefined
+  // A homepage fica fixa em primeiro, com o label configurável "Home" por
+  // padrão, sem competir alfabeticamente com as outras páginas.
+  const homepageIndex = entries.findIndex(e => !isSidebarGroup(e) && e.slug === 'index')
+  const homepageEntry = homepageIndex >= 0 ? entries.splice(homepageIndex, 1)[0] : undefined
   const sorted = sortEntries(entries)
-  return readme ? [{ slug: 'index', label: resolveLabel('readme', 'Home') }, ...sorted] : sorted
+  return homepageEntry ? [{ slug: 'index', label: resolveLabel(homepage, 'Home') }, ...sorted] : sorted
 }

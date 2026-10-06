@@ -195,6 +195,11 @@ describe('toCollectionId', () => {
     expect(toCollectionId('README.md')).toBe('index')
   })
 
+  it('keeps README separate when root index.md is the homepage', () => {
+    expect(toCollectionId('index.md', 'index')).toBe('index')
+    expect(toCollectionId('README.md', 'index')).toBe('readme')
+  })
+
   it('normalizes document ids while preserving nested routes', () => {
     expect(toCollectionId('Guides/Getting-Started.mdx')).toBe('guides/getting-started')
   })

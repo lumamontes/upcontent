@@ -7,6 +7,8 @@ sidebar:
 
 The sidebar is generated from the consumer file structure. Use configuration when the default filesystem order is not the right experience for readers.
 
+If the repository has a root `index.md`, it becomes the website homepage and a root `README.md` remains available at `/readme/`. Repositories without `index.md` keep the backwards-compatible behavior where `README.md` is the homepage.
+
 ## Select top-level roots
 
 ```json

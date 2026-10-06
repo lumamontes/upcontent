@@ -14,6 +14,7 @@ import { remarkDocumentLinks } from './src/lib/remark-doc-links.ts'
 import { getPortalConfig } from './src/lib/portal-config.ts'
 import { buildSidebar } from './src/lib/sidebar.ts'
 import { getNoindexRoutes } from './src/lib/seo-sitemap.ts'
+import { hasRootIndex } from './src/lib/homepage.ts'
 import { PRODUCT_NAME, PRODUCT_TAGLINE } from './src/lib/product-identity.ts'
 
 const docsRoot = fileURLToPath(new URL('./src/content/docs', import.meta.url))
@@ -21,15 +22,18 @@ const portalConfig = getPortalConfig()
 
 function copyContentAssetDirectory(assetPath) {
   const source = resolve(docsRoot, assetPath)
-  const target = resolve(process.cwd(), 'public', assetPath)
+  const targets = [resolve(process.cwd(), 'public', assetPath)]
+  if (hasRootIndex(docsRoot)) targets.push(resolve(process.cwd(), 'public', 'readme', assetPath))
   if (!existsSync(source) || !statSync(source).isDirectory()) {
-    rmSync(target, { force: true, recursive: true })
+    for (const target of targets) rmSync(target, { force: true, recursive: true })
     return
   }
 
-  rmSync(target, { force: true, recursive: true })
-  mkdirSync(resolve(target, '..'), { recursive: true })
-  cpSync(source, target, { recursive: true })
+  for (const target of targets) {
+    rmSync(target, { force: true, recursive: true })
+    mkdirSync(resolve(target, '..'), { recursive: true })
+    cpSync(source, target, { recursive: true })
+  }
 }
 
 copyContentAssetDirectory('assets/readme')

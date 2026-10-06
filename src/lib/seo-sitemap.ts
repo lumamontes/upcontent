@@ -1,11 +1,13 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { load as parseYaml } from 'js-yaml'
+import { hasRootIndex } from './homepage'
 
 const MARKDOWN_EXTENSION = /\.(?:markdown|mdown|mkdn|mkd|mdwn|md|mdx)$/i
 
 export function getNoindexRoutes(docsRoot: string): Set<string> {
   const routes = new Set<string>()
+  const homepage = hasRootIndex(docsRoot) ? 'index' : 'readme'
 
   function visitDirectory(directory: string): void {
     for (const name of readdirSync(directory)) {
@@ -34,7 +36,7 @@ export function getNoindexRoutes(docsRoot: string): Set<string> {
       const docPath = relative(docsRoot, filePath).replace(/\\/g, '/')
       const route = docPath.replace(MARKDOWN_EXTENSION, '').replace(/\/index$/i, '').toLowerCase()
       const encodedRoute = toSitemapRoute(route)
-      routes.add(route === 'readme' ? '/' : `/${encodedRoute}`)
+       routes.add(route === homepage ? '/' : `/${encodedRoute}`)
     }
   }
 

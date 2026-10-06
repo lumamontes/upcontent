@@ -7,6 +7,7 @@ import { i18nLoader } from '@astrojs/starlight/loaders'
 import { glob } from 'astro/loaders'
 import type { Loader, LoaderContext } from 'astro/loaders'
 import { getBlocklist, isBlocked, toRelativeDocPath, toTitleCase } from './lib/content-blocklist'
+import { hasRootIndex } from './lib/homepage'
 import { getPortalConfig } from './lib/portal-config'
 
 export { getBlocklist, isBlocked, toRelativeDocPath }
@@ -65,9 +66,10 @@ export function resolveTitle(relativeFilePath: string, data: Record<string, unkn
   data.title = toTitleCase(withoutExt)
 }
 
-export function toCollectionId(relativeFilePath: string): string {
+export function toCollectionId(relativeFilePath: string, homepage: 'index' | 'readme' = 'readme'): string {
   const normalized = relativeFilePath.split(path.sep).join('/').replace(MARKDOWN_EXTENSION, '').toLowerCase()
-  if (normalized === 'readme') return 'index'
+  if (normalized === homepage) return 'index'
+  if (normalized === 'readme') return 'readme'
   return normalized.endsWith('/index') ? normalized.slice(0, -'/index'.length) : normalized
 }
 
@@ -82,6 +84,7 @@ function portalDocsLoader(): Loader {
     name: 'portal-docs-loader',
     async load(context: LoaderContext) {
       const docsBasePath = fileURLToPath(new URL('src/content/docs/', context.config.root))
+      const homepage = hasRootIndex(docsBasePath) ? 'index' : 'readme'
       const patterns = [
         '**/[^_]*.{markdown,mdown,mkdn,mkd,mdwn,md,mdx}',
         ...getBlocklist().map(blocked => `!${toCaseInsensitiveGlob(blocked)}${blocked.endsWith('/') ? '**' : ''}`),
@@ -96,14 +99,14 @@ function portalDocsLoader(): Loader {
           return context.parseData(props)
         },
       }
-      await glob({ base: docsBasePath, pattern: patterns, generateId: ({ entry }) => toCollectionId(entry) }).load(wrappedContext)
+      await glob({ base: docsBasePath, pattern: patterns, generateId: ({ entry }) => toCollectionId(entry, homepage) }).load(wrappedContext)
     },
   }
 }
 
 export const collections = {
   docs: defineCollection({
-    loader: portalDocsLoader(),
+        loader: portalDocsLoader(),
     schema: docsSchema({ extend: domainFieldsSchema }),
   }),
   i18n: defineCollection({

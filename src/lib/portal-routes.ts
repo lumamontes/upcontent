@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs'
 import { dirname, extname, relative, resolve, sep } from 'node:path'
+import { hasRootIndex } from './homepage'
 
 function splitHref(href: string): { path: string; suffix: string } {
   const match = href.match(/^([^?#]*)([?#].*)?$/)
@@ -26,11 +27,13 @@ function documentPath(path: string): string | undefined {
   return undefined
 }
 
-export function toPortalRoute(path: string, basePath = '/'): string {
+export function toPortalRoute(path: string, basePath = '/', homepage: 'index' | 'readme' = 'readme'): string {
   const withoutExtension = path.replace(/\.mdx?$/i, '')
   const normalizedPath = withoutExtension.toLowerCase()
-  const route = normalizedPath === 'readme'
+  const route = normalizedPath === homepage
     ? ''
+    : normalizedPath === 'readme'
+      ? 'readme'
     : normalizedPath.endsWith('/index')
       ? normalizedPath.slice(0, -'/index'.length)
       : normalizedPath
@@ -55,5 +58,6 @@ export function resolveMarkdownLink(
   const markdownPath = documentPath(candidatePath)
   if (!markdownPath) return href
   const relativePath = relative(root, markdownPath).split(sep).join('/')
-  return `${toPortalRoute(relativePath, basePath)}${suffix}`
+  const homepage = hasRootIndex(contentRoot) ? 'index' : 'readme'
+  return `${toPortalRoute(relativePath, basePath, homepage)}${suffix}`
 }

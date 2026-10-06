@@ -34,4 +34,13 @@ describe('getNoindexRoutes', () => {
       '/guides/guide%2523notes',
     ]))
   })
+
+  it('keeps a noindex README separate when index.md is the homepage', () => {
+    const root = mkdtempSync(join(tmpdir(), 'upcontent-seo-'))
+    roots.push(root)
+    writeFileSync(join(root, 'index.md'), '# Home\n')
+    writeFileSync(join(root, 'README.md'), '---\nnoindex: true\n---\n')
+
+    expect(getNoindexRoutes(root)).toEqual(new Set(['/readme']))
+  })
 })

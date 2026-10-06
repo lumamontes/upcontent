@@ -47,6 +47,12 @@ describe('resolveMarkdownLink', () => {
     expect(resolveMarkdownLink('README#start', join(root, 'README.md'), root)).toBe('/#start')
   })
 
+  it('uses root index.md as the homepage when README.md is also present', () => {
+    const root = fixture(['README.md', 'index.md'])
+    expect(resolveMarkdownLink('index.md', join(root, 'README.md'), root)).toBe('/')
+    expect(resolveMarkdownLink('README.md', join(root, 'index.md'), root)).toBe('/readme/')
+  })
+
   it('prefixes generated routes with the configured base path', () => {
     const root = fixture(['README.md', 'guide.md'])
     expect(resolveMarkdownLink('guide.md', join(root, 'README.md'), root, '/recursos/')).toBe('/recursos/guide/')

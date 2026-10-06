@@ -41,6 +41,7 @@
   },
   "navigation": {
     "roots": [
+      "index.md",
       "README.md",
       "getting-started",
       "guides",
@@ -76,7 +77,8 @@
       ]
     },
     "labelOverrides": {
-      "docs": "Project Docs"
+      "docs": "Project Docs",
+      "readme": "Repository README"
     }
   },
   "content": {
