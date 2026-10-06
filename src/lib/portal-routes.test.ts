@@ -48,8 +48,8 @@ describe('resolveMarkdownLink', () => {
   })
 
   it('uses root index.md as the homepage when README.md is also present', () => {
-    const root = fixture(['README.md', 'index.md'])
-    expect(resolveMarkdownLink('index.md', join(root, 'README.md'), root)).toBe('/')
+    const root = fixture(['README.md', 'index.markdown'])
+    expect(resolveMarkdownLink('index.markdown', join(root, 'README.md'), root)).toBe('/')
     expect(resolveMarkdownLink('README.md', join(root, 'index.md'), root)).toBe('/readme/')
   })
 
