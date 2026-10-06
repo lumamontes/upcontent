@@ -60,12 +60,12 @@ const customCss = ['./src/styles/callouts.css', './src/styles/structured-data-pr
 const starlightOptions = portalConfig.starlight ?? {}
 const configuredSiteUrl = process.env.SITE_URL || portalConfig.site?.url
 let site
-let base
+let base = process.env.BASE_PATH || undefined
 if (portalConfig.seo?.enabled === true && configuredSiteUrl) {
   try {
     const parsedSiteUrl = new URL(configuredSiteUrl)
     site = parsedSiteUrl.origin
-    base = process.env.BASE_PATH || (parsedSiteUrl.pathname === '/' ? undefined : parsedSiteUrl.pathname)
+    if (!process.env.BASE_PATH) base = parsedSiteUrl.pathname === '/' ? undefined : parsedSiteUrl.pathname
   } catch {
     console.warn(`[${PRODUCT_NAME}] SEO site URL must be an absolute URL: ${configuredSiteUrl}`)
   }
