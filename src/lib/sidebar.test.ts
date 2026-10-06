@@ -108,6 +108,16 @@ describe('buildSidebar', () => {
     expect(sidebar[1].label).toBe('Historico')
   })
 
+  it('permite sobrescrever o label do README', () => {
+    vi.mocked(fs.existsSync).mockReturnValue(true)
+    vi.mocked(fs.readFileSync).mockReturnValue(
+      JSON.stringify({ navigation: { labelOverrides: { readme: 'Docs' } } }),
+    )
+    mountFs(ROOT, { 'README.md': null, domains: { historico: { 'a.md': null } } })
+    const sidebar = buildSidebar(ROOT) as { label: string }[]
+    expect(sidebar[0]).toEqual({ slug: 'index', label: 'Docs' })
+  })
+
   it('aplica labelOverrides do .upcontent/config.json em cima do Title Case', () => {
     vi.mocked(fs.existsSync).mockReturnValue(true)
     vi.mocked(fs.readFileSync).mockReturnValue(

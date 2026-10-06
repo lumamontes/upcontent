@@ -49,7 +49,7 @@ export function toTitleCase(filenameWithoutExt: string): string {
 // automaticamente pro português — quem conhece o vocabulário é o
 // repositório de conteúdo, via navigation.labelOverrides no .upcontent/config.json.
 // Fallback é sempre toTitleCase(name) quando não há override.
-export function resolveLabel(name: string): string {
+export function resolveLabel(name: string, fallback = toTitleCase(name)): string {
   const override = getPortalConfig().navigation?.labelOverrides?.[name.toLowerCase()]
-  return override ?? toTitleCase(name)
+  return override ?? fallback
 }

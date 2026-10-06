@@ -110,5 +110,5 @@ export function buildSidebar(docsRoot: string): SidebarEntry[] {
   const readmeIndex = entries.findIndex(e => !isSidebarGroup(e) && e.slug === 'index')
   const readme = readmeIndex >= 0 ? entries.splice(readmeIndex, 1)[0] : undefined
   const sorted = sortEntries(entries)
-  return readme ? [{ slug: 'index', label: 'Home' }, ...sorted] : sorted
+  return readme ? [{ slug: 'index', label: resolveLabel('readme', 'Home') }, ...sorted] : sorted
 }
