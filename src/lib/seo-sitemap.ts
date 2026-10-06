@@ -33,7 +33,7 @@ export function getNoindexRoutes(docsRoot: string): Set<string> {
 
       const docPath = relative(docsRoot, filePath).replace(/\\/g, '/')
       const route = docPath.replace(MARKDOWN_EXTENSION, '').replace(/\/index$/i, '').toLowerCase()
-      routes.add(route === 'readme' ? '/' : `/${route}`)
+      routes.add(route === 'readme' ? '/' : encodeURI(`/${route}`))
     }
   }
 

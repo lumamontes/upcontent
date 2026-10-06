@@ -18,8 +18,9 @@ describe('getNoindexRoutes', () => {
     writeFileSync(join(root, 'README.md'), '---\nnoindex: true\n---\n')
     writeFileSync(join(root, 'guides', 'internal.md'), '---\nnoindex: true\n---\n')
     writeFileSync(join(root, 'guides', 'legacy.markdown'), '---\nnoindex: true\n---\n')
+    writeFileSync(join(root, 'guides', 'Release Notes.md'), '---\nnoindex: true\n---\n')
     writeFileSync(join(root, 'public.md'), '---\nnoindex: false\n---\n')
 
-    expect(getNoindexRoutes(root)).toEqual(new Set(['/', '/guides/internal', '/guides/legacy']))
+    expect(getNoindexRoutes(root)).toEqual(new Set(['/', '/guides/internal', '/guides/legacy', '/guides/release%20notes']))
   })
 })
