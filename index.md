@@ -18,6 +18,7 @@ Upcontent turns the documentation repository you already have into a fast, searc
 - [Run your first build](getting-started/first-build/)
 - [Configure content](customization/content/)
 - [Configure navigation](customization/navigation/)
+- [Configure search visibility](customization/seo/)
 - [Customize the portal](customization/)
 - [Validate before publishing](guides/validate-your-site/)
 - [Publish to GitHub Pages](deployment/github-pages/)

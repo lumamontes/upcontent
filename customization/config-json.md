@@ -88,7 +88,7 @@ The optional fields below cover navigation, Starlight presentation, and content 
 | Group | Controls |
 | --- | --- |
 | `site` | Name, description, URL, social image, locale, logo, and favicon. |
-| `seo` | Explicitly enables search-engine discoverability. Defaults to disabled. |
+| `seo` | Explicitly enables search-engine discoverability. Defaults to disabled. See [Search engine visibility](seo/). |
 | `repo` | Source repository links. |
 | `theme` | Consumer-owned local CSS. |
 | `starlight` | Safe layout, social, table of contents, pagination, and code options. |
