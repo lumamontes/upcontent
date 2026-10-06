@@ -44,6 +44,12 @@ describe('domainFieldsSchema', () => {
     expect(result.success).toBe(false)
   })
 
+  it('rejeita canonical com esquema que não é HTTP(S)', () => {
+    const result = domainFieldsSchema.safeParse({ canonical: 'mailto:docs@example.com' })
+
+    expect(result.success).toBe(false)
+  })
+
   it('aceita created/updated como objeto Date (YAML parseia datas automaticamente)', () => {
     const result = domainFieldsSchema.safeParse({
       created: new Date('2026-08-07'),

@@ -18,12 +18,12 @@ export { getBlocklist, isBlocked, toRelativeDocPath }
 export const domainFieldsSchema = z.object({
   canonical: z.string().refine(value => {
     try {
-      new URL(value)
-      return true
+      const url = new URL(value)
+      return url.protocol === 'http:' || url.protocol === 'https:'
     } catch {
       return false
     }
-  }, 'canonical must be an absolute URL').optional(),
+  }, 'canonical must be an absolute HTTP(S) URL').optional(),
   image: z.string().optional(),
   noindex: z.boolean().optional(),
   type: z.string().optional(),

@@ -12,7 +12,7 @@ const { entry } = Astro.locals.starlightRoute
 const isHome = Astro.locals.starlightRoute.id === 'readme'
 const baseHead = isHome ? head.filter(({ tag }) => tag !== 'title') : head
 const config = getPortalConfig()
-const seoEnabled = config.seo?.enabled === true
+const seoEnabled = config.seo?.enabled === true && Boolean(Astro.site)
 const siteTitle = config.site?.title ?? PRODUCT_NAME
 const pageData = entry?.data ?? {}
 const seoHead = seoEnabled
@@ -30,8 +30,11 @@ const canonicalUrl = seoEnabled
       ? canonicalTag.attrs.href
       : undefined
   : undefined
-const pageHead = pageData.canonical
-  ? seoHead.filter(({ tag, attrs }) => !(tag === 'link' && attrs?.rel === 'canonical') && !(tag === 'meta' && attrs?.property === 'og:url'))
+const pageHead = pageData.canonical || config.site?.locale
+  ? seoHead.filter(({ tag, attrs }) =>
+      !(tag === 'link' && attrs?.rel === 'canonical')
+      && !(tag === 'meta' && (attrs?.property === 'og:url' || (config.site?.locale && attrs?.property === 'og:locale'))),
+    )
   : seoHead
 const socialImage = seoEnabled && (typeof pageData.image === 'string' ? pageData.image : config.site?.socialImage)
 const robots = !seoEnabled || pageData.noindex === true ? 'noindex, nofollow' : undefined
@@ -69,6 +72,9 @@ const structuredData = canonicalUrl
       ],
     }
   : undefined;
+const structuredDataJson = structuredData
+  ? JSON.stringify(structuredData).replace(/[<>&]/g, character => ({ '<': '\\u003c', '>': '\\u003e', '&': '\\u0026' })[character]!)
+  : undefined
 ---
 
 {pageHead.map(({ tag: Tag, attrs, content }) => <Tag {...attrs} set:html={content} />)}
@@ -76,9 +82,10 @@ const structuredData = canonicalUrl
 {isHome && <title>{siteTitle}</title>}
 {seoEnabled && pageData.canonical && <link rel="canonical" href={canonicalUrl} />}
 {seoEnabled && pageData.canonical && <meta property="og:url" content={canonicalUrl} />}
+{seoEnabled && config.site?.locale && <meta property="og:locale" content={config.site.locale} />}
 {absoluteImage && <meta property="og:image" content={absoluteImage} />}
 {absoluteImage && <meta name="twitter:image" content={absoluteImage} />}
 {robots && <meta name="robots" content={robots} />}
-{structuredData && <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />}
+{structuredDataJson && <script type="application/ld+json" set:html={structuredDataJson} />}
 <MermaidLoader />
 <StructuredDataCopy />
