@@ -1,6 +1,8 @@
 import { existsSync } from 'node:fs'
-import { dirname, extname, relative, resolve, sep } from 'node:path'
+import { dirname, relative, resolve, sep } from 'node:path'
 import { hasRootIndex } from './homepage'
+
+const MARKDOWN_EXTENSION = /\.(?:markdown|mdown|mkdn|mkd|mdwn|md|mdx)$/i
 
 function splitHref(href: string): { path: string; suffix: string } {
   const match = href.match(/^([^?#]*)([?#].*)?$/)
@@ -17,18 +19,18 @@ function isExternalHref(href: string): boolean {
 }
 
 function documentPath(path: string): string | undefined {
-  if (extname(path).toLowerCase() === '.md' || extname(path).toLowerCase() === '.mdx') {
+  if (MARKDOWN_EXTENSION.test(path)) {
     return existsSync(path) ? path : undefined
   }
-  if (existsSync(`${path}.md`)) return `${path}.md`
-  if (existsSync(`${path}.mdx`)) return `${path}.mdx`
-  if (path.endsWith('/') && existsSync(`${path}index.md`)) return `${path}index.md`
-  if (path.endsWith('/') && existsSync(`${path}index.mdx`)) return `${path}index.mdx`
+  for (const extension of ['.markdown', '.mdown', '.mkdn', '.mkd', '.mdwn', '.md', '.mdx']) {
+    if (existsSync(`${path}${extension}`)) return `${path}${extension}`
+    if (path.endsWith('/') && existsSync(`${path}index${extension}`)) return `${path}index${extension}`
+  }
   return undefined
 }
 
 export function toPortalRoute(path: string, basePath = '/', homepage: 'index' | 'readme' = 'readme'): string {
-  const withoutExtension = path.replace(/\.mdx?$/i, '')
+  const withoutExtension = path.replace(MARKDOWN_EXTENSION, '')
   const normalizedPath = withoutExtension.toLowerCase()
   const route = normalizedPath === homepage
     ? ''

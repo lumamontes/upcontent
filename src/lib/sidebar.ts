@@ -37,7 +37,7 @@ function sortEntries(entries: SidebarEntry[]): SidebarEntry[] {
 }
 
 function toSidebarSlug(relativePath: string, homepage: 'index' | 'readme'): string {
-  const slug = relativePath.replace(/\.mdx?$/i, '').toLowerCase()
+  const slug = relativePath.replace(MARKDOWN_EXTENSION, '').toLowerCase()
   if (slug === homepage) return 'index'
   if (slug === 'readme') return 'readme'
   return slug.endsWith('/index') ? slug.slice(0, -'/index'.length) : slug
@@ -104,7 +104,7 @@ export function buildSidebar(docsRoot: string): SidebarEntry[] {
     } else if (isDir) {
       const items = buildDir(`${docsRoot}/${name}`, name, homepage)
       if (items.length > 0) entries.push({ label: resolveLabel(name), items })
-    } else if (/\.mdx?$/i.test(name)) {
+    } else if (MARKDOWN_EXTENSION.test(name)) {
       entries.push({ slug: toSidebarSlug(name, homepage) })
     }
   }

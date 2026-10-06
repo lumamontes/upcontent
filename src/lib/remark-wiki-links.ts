@@ -5,6 +5,8 @@ import { PRODUCT_NAME } from './product-identity'
 import { hasRootIndex } from './homepage'
 import { toPortalRoute } from './portal-routes'
 
+const MARKDOWN_EXTENSION = /\.(?:markdown|mdown|mkdn|mkd|mdwn|md|mdx)$/i
+
 interface MdastText {
   type: 'text'
   value: string
@@ -60,10 +62,10 @@ function wikiLinkResolves(ref: string, contentRoot: string): boolean {
   if (!pagePart) return true
   const target = resolve(contentRoot, pagePart)
   if (!target.startsWith(`${resolve(contentRoot)}${sep}`)) return false
-  if (/\.(?!mdx?$)[^/]+$/i.test(pagePart)) return false
-  const withoutExtension = target.replace(/\.mdx?$/i, '')
-  return [`${withoutExtension}.md`, `${withoutExtension}.mdx`, resolve(target, 'index.md'), resolve(target, 'index.mdx')]
-    .some(candidate => existsSync(candidate))
+  if (/\.[^/]+$/i.test(pagePart) && !MARKDOWN_EXTENSION.test(pagePart)) return false
+  const withoutExtension = target.replace(MARKDOWN_EXTENSION, '')
+  const extensions = ['.markdown', '.mdown', '.mkdn', '.mkd', '.mdwn', '.md', '.mdx']
+  return extensions.some(extension => existsSync(`${withoutExtension}${extension}`) || existsSync(resolve(target, `index${extension}`)))
 }
 
 // Remark plugin: converts [[page]] / [[#heading]] / [[page#heading]] / [[page|label]]
