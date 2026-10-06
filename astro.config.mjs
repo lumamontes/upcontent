@@ -58,6 +58,18 @@ const consumerCss = (portalConfig.theme?.customCss ?? [])
 
 const customCss = ['./src/styles/callouts.css', './src/styles/structured-data-preview.css', ...consumerCss]
 const starlightOptions = portalConfig.starlight ?? {}
+const configuredSiteUrl = process.env.SITE_URL || portalConfig.site?.url
+let site
+let base
+if (portalConfig.seo?.enabled === true && configuredSiteUrl) {
+  try {
+    const parsedSiteUrl = new URL(configuredSiteUrl)
+    site = parsedSiteUrl.origin
+    base = process.env.BASE_PATH || (parsedSiteUrl.pathname === '/' ? undefined : parsedSiteUrl.pathname)
+  } catch {
+    console.warn(`[${PRODUCT_NAME}] SEO site URL must be an absolute URL: ${configuredSiteUrl}`)
+  }
+}
 
 // Remark plugin: converts ```mermaid blocks to <div class="mermaid"> BEFORE Shiki runs
 function remarkMermaid() {
@@ -90,10 +102,8 @@ function rehypeStripMdLinks() {
 
 export default defineConfig({
   output: 'static',
-  site: portalConfig.seo?.enabled === true
-    ? process.env.SITE_URL || portalConfig.site?.url || undefined
-    : undefined,
-  base: process.env.BASE_PATH || undefined,
+  site,
+  base,
   integrations: [
     starlight({
       title: portalConfig.site?.title ?? PRODUCT_NAME,
