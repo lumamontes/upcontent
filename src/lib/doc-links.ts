@@ -1,4 +1,5 @@
 import type { CollectionEntry } from 'astro:content'
+import { stripMarkdownExtension } from './markdown'
 
 export function buildGitHubUrl(
   repoUrl: string | undefined,
@@ -21,10 +22,11 @@ export function resolveRelated(
 ): RelatedDoc[] {
   if (!related || related.length === 0) return []
   return related.flatMap(ref => {
-    const normalized = ref.endsWith('.md') ? ref : `${ref}.md`
-    const entry = allDocs.find(d => d.id === normalized)
+    const normalized = stripMarkdownExtension(ref).toLowerCase()
+    const entry = allDocs.find(d => stripMarkdownExtension(d.id).toLowerCase() === normalized)
     if (!entry) return []
-    const slug = normalized.replace(/\.md$/, '')
+    const entryId = stripMarkdownExtension(entry.id).toLowerCase()
+    const slug = entryId === 'index' ? '' : entryId === 'readme' ? 'readme/' : entryId
     const title = (entry.data as Record<string, unknown>).title as string | undefined ?? slug
     return [{ slug, title }]
   })

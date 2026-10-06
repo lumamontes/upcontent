@@ -38,7 +38,10 @@ function mountFs(root: string, tree: Tree) {
 
   vi.mocked(fs.statSync).mockImplementation((path: unknown) => {
     const node = lookup(String(path))
-    return { isDirectory: () => node !== null && typeof node === 'object' } as never
+    return {
+      isDirectory: () => node !== null && typeof node === 'object',
+      isFile: () => node === null,
+    } as never
   })
 }
 

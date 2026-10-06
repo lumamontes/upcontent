@@ -59,4 +59,18 @@ describe('resolveRelated', () => {
     const result = resolveRelated(['domains/bar/trd'], allDocs as any)
     expect(result[0].title).toBe('domains/bar/trd')
   })
+
+  it('resolve extensões alternativas e as rotas distintas de index e README', () => {
+    const docs = [
+      { id: 'index', data: { title: 'Home' } },
+      { id: 'readme', data: { title: 'README' } },
+      { id: 'guides/legacy', data: { title: 'Legacy' } },
+    ]
+
+    expect(resolveRelated(['index.md', 'README.markdown', 'guides/legacy.mdx'], docs as any)).toEqual([
+      { slug: '', title: 'Home' },
+      { slug: 'readme/', title: 'README' },
+      { slug: 'guides/legacy', title: 'Legacy' },
+    ])
+  })
 })
