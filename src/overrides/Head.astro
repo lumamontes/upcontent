@@ -32,8 +32,9 @@ const canonicalUrl = seoEnabled
   : undefined
 const pageHead = pageData.canonical || config.site?.locale
   ? seoHead.filter(({ tag, attrs }) =>
-      !(tag === 'link' && attrs?.rel === 'canonical')
-      && !(tag === 'meta' && (attrs?.property === 'og:url' || (config.site?.locale && attrs?.property === 'og:locale'))),
+      !(pageData.canonical && tag === 'link' && attrs?.rel === 'canonical')
+      && !(pageData.canonical && tag === 'meta' && attrs?.property === 'og:url')
+      && !(config.site?.locale && tag === 'meta' && attrs?.property === 'og:locale'),
     )
   : seoHead
 const socialImage = seoEnabled && (typeof pageData.image === 'string' ? pageData.image : config.site?.socialImage)
