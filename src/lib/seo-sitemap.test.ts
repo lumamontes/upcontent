@@ -17,8 +17,9 @@ describe('getNoindexRoutes', () => {
     mkdirSync(join(root, 'guides'), { recursive: true })
     writeFileSync(join(root, 'README.md'), '---\nnoindex: true\n---\n')
     writeFileSync(join(root, 'guides', 'internal.md'), '---\nnoindex: true\n---\n')
+    writeFileSync(join(root, 'guides', 'legacy.markdown'), '---\nnoindex: true\n---\n')
     writeFileSync(join(root, 'public.md'), '---\nnoindex: false\n---\n')
 
-    expect(getNoindexRoutes(root)).toEqual(new Set(['/', '/guides/internal']))
+    expect(getNoindexRoutes(root)).toEqual(new Set(['/', '/guides/internal', '/guides/legacy']))
   })
 })

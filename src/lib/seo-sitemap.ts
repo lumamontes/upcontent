@@ -2,6 +2,8 @@ import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { load as parseYaml } from 'js-yaml'
 
+const MARKDOWN_EXTENSION = /\.(?:markdown|mdown|mkdn|mkd|mdwn|md|mdx)$/i
+
 export function getNoindexRoutes(docsRoot: string): Set<string> {
   const routes = new Set<string>()
 
@@ -13,7 +15,7 @@ export function getNoindexRoutes(docsRoot: string): Set<string> {
         visitDirectory(filePath)
         continue
       }
-      if (!/\.mdx?$/i.test(name)) continue
+      if (!MARKDOWN_EXTENSION.test(name)) continue
 
       const source = readFileSync(filePath, 'utf8')
       const frontmatter = source.match(/^---\s*\n([\s\S]*?)\n---(?:\s|$)/)?.[1]
@@ -30,7 +32,7 @@ export function getNoindexRoutes(docsRoot: string): Set<string> {
       }
 
       const docPath = relative(docsRoot, filePath).replace(/\\/g, '/')
-      const route = docPath.replace(/\.mdx?$/i, '').replace(/\/index$/i, '').toLowerCase()
+      const route = docPath.replace(MARKDOWN_EXTENSION, '').replace(/\/index$/i, '').toLowerCase()
       routes.add(route === 'readme' ? '/' : `/${route}`)
     }
   }
