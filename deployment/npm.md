@@ -32,7 +32,7 @@ Create and push the matching tag:
 
 ```sh
 VERSION=$(node -p "require('./package.json').version")
-git tag "v$VERSION"
+git tag -a "v$VERSION" -m "Release v$VERSION"
 git push origin main --follow-tags
 ```
 

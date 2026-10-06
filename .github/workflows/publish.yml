@@ -31,6 +31,10 @@ jobs:
       - name: Verify npm version
         run: npm --version
 
+      - name: Require npm Trusted Publishing support
+        run: |
+          node -e "const [major, minor] = process.argv[1].split('.').map(Number); if (major < 11 || (major === 11 && minor < 5)) process.exit(1)" "$(npm --version)"
+
       - name: Verify tag matches package version
         env:
           TAG_VERSION: ${{ github.ref_name }}
