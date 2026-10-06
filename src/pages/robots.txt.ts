@@ -25,6 +25,9 @@ export function GET() {
 
 function addBasePath(siteUrl: string, basePath: string): string {
   const url = new URL(siteUrl)
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') throw new Error('unsupported protocol')
+  url.search = ''
+  url.hash = ''
   const normalizedBasePath = basePath.replace(/^\/+|\/+$/g, '')
 
   if (normalizedBasePath) {

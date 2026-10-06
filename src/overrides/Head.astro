@@ -81,7 +81,8 @@ const structuredDataJson = structuredData
 function resolveOptionalUrl(value: unknown, baseUrl: string | undefined): string | undefined {
   if (typeof value !== 'string' || value.length === 0) return undefined
   try {
-    return new URL(value, baseUrl).href
+    const url = new URL(value, baseUrl)
+    return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : undefined
   } catch {
     return undefined
   }

@@ -2,6 +2,7 @@ import { fileURLToPath } from 'node:url'
 import { cpSync, existsSync, mkdirSync, statSync } from 'node:fs'
 import { basename, resolve, sep } from 'node:path'
 import { unified } from '@astrojs/markdown-remark'
+import sitemap from '@astrojs/sitemap'
 import starlight from '@astrojs/starlight'
 import { defineConfig } from 'astro/config'
 import { visit } from 'unist-util-visit'
@@ -12,6 +13,7 @@ import { remarkWikiLinks } from './src/lib/remark-wiki-links.ts'
 import { remarkDocumentLinks } from './src/lib/remark-doc-links.ts'
 import { getPortalConfig } from './src/lib/portal-config.ts'
 import { buildSidebar } from './src/lib/sidebar.ts'
+import { getNoindexRoutes } from './src/lib/seo-sitemap.ts'
 import { PRODUCT_NAME, PRODUCT_TAGLINE } from './src/lib/product-identity.ts'
 
 const docsRoot = fileURLToPath(new URL('./src/content/docs', import.meta.url))
@@ -59,17 +61,30 @@ const consumerCss = (portalConfig.theme?.customCss ?? [])
 
 const customCss = ['./src/styles/callouts.css', './src/styles/structured-data-preview.css', ...consumerCss]
 const starlightOptions = portalConfig.starlight ?? {}
+const noindexRoutes = getNoindexRoutes(docsRoot)
 const configuredSiteUrl = process.env.SITE_URL || portalConfig.site?.url
 let site
 let base = process.env.BASE_PATH || undefined
 if (portalConfig.seo?.enabled === true && configuredSiteUrl) {
   try {
     const parsedSiteUrl = new URL(configuredSiteUrl)
+    if (parsedSiteUrl.protocol !== 'http:' && parsedSiteUrl.protocol !== 'https:') throw new Error('unsupported protocol')
     site = parsedSiteUrl.origin
     if (!process.env.BASE_PATH) base = parsedSiteUrl.pathname === '/' ? undefined : parsedSiteUrl.pathname
   } catch {
     console.warn(`[${PRODUCT_NAME}] SEO site URL must be an absolute URL: ${configuredSiteUrl}`)
   }
+}
+
+function includeInSitemap(page) {
+  const pathname = new URL(page).pathname.replace(/\/+$/, '') || '/'
+  const basePath = (base || '').replace(/\/+$/, '')
+  const route = pathname === basePath
+    ? '/'
+    : basePath && pathname.startsWith(`${basePath}/`)
+      ? pathname.slice(basePath.length)
+      : pathname
+  return !noindexRoutes.has(route)
 }
 
 // Remark plugin: converts ```mermaid blocks to <div class="mermaid"> BEFORE Shiki runs
@@ -93,6 +108,7 @@ export default defineConfig({
   site,
   base,
   integrations: [
+    sitemap({ filter: includeInSitemap }),
     starlight({
       title: portalConfig.site?.title ?? PRODUCT_NAME,
       description: portalConfig.site?.description ?? PRODUCT_TAGLINE,
