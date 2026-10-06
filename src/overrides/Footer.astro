@@ -23,10 +23,7 @@ const editUrl = buildGitHubUrl(repoUrl, filePath, 'edit')
 const related = entry.data.related?.length
   ? resolveRelated(
       entry.data.related,
-      (await getCollection('docs')).map(doc => ({
-        ...doc,
-        id: doc.filePath ? toRelativeDocPath(doc.filePath) : doc.id,
-      })),
+      await getCollection('docs'),
     )
   : []
 ---
