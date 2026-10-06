@@ -8,11 +8,10 @@ import { glob } from 'astro/loaders'
 import type { Loader, LoaderContext } from 'astro/loaders'
 import { getBlocklist, isBlocked, toRelativeDocPath, toTitleCase } from './lib/content-blocklist'
 import { hasRootIndex } from './lib/homepage'
+import { MARKDOWN_EXTENSION, stripMarkdownExtension } from './lib/markdown'
 import { getPortalConfig } from './lib/portal-config'
 
 export { getBlocklist, isBlocked, toRelativeDocPath }
-
-const MARKDOWN_EXTENSION = /\.(?:markdown|mdown|mkdn|mkd|mdwn|md|mdx)$/i
 
 // Campos de domínio específicos deste portal, além do schema padrão do
 // Starlight (title, description, sidebar, etc). Mantido isolado do
@@ -67,7 +66,7 @@ export function resolveTitle(relativeFilePath: string, data: Record<string, unkn
 }
 
 export function toCollectionId(relativeFilePath: string, homepage: 'index' | 'readme' = 'readme'): string {
-  const normalized = relativeFilePath.split(path.sep).join('/').replace(MARKDOWN_EXTENSION, '').toLowerCase()
+  const normalized = stripMarkdownExtension(relativeFilePath.split(path.sep).join('/')).toLowerCase()
   if (normalized === homepage) return 'index'
   if (normalized === 'readme') return 'readme'
   return normalized.endsWith('/index') ? normalized.slice(0, -'/index'.length) : normalized

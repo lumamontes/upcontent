@@ -22,8 +22,11 @@ const portalConfig = getPortalConfig()
 
 function copyContentAssetDirectory(assetPath) {
   const source = resolve(docsRoot, assetPath)
-  const targets = [resolve(process.cwd(), 'public', assetPath)]
-  if (hasRootIndex(docsRoot)) targets.push(resolve(process.cwd(), 'public', 'readme', assetPath))
+  const target = resolve(process.cwd(), 'public', assetPath)
+  const readmeTarget = resolve(process.cwd(), 'public', 'readme', assetPath)
+  const hasHomepage = hasRootIndex(docsRoot)
+  const targets = hasHomepage ? [target, readmeTarget] : [target]
+  if (!hasHomepage) rmSync(readmeTarget, { force: true, recursive: true })
   if (!existsSync(source) || !statSync(source).isDirectory()) {
     for (const target of targets) rmSync(target, { force: true, recursive: true })
     return

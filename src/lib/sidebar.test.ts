@@ -89,6 +89,15 @@ describe('buildSidebar', () => {
     expect(sidebar.map(entry => entry.label)).toEqual(['Docs'])
   })
 
+  it('mantém a homepage mesmo quando roots não a lista', () => {
+    vi.mocked(fs.existsSync).mockReturnValue(true)
+    vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify({ navigation: { roots: ['guides'] } }))
+    mountFs(ROOT, { 'index.md': null, guides: { 'guide.md': null } })
+
+    const sidebar = buildSidebar(ROOT)
+    expect(sidebar[0]).toEqual({ slug: 'index', label: 'Home' })
+  })
+
   it('ignora dotfiles e dot-directories', () => {
     mountFs(ROOT, { '.claude': { 'x.md': null }, domains: { historico: { 'a.md': null } } })
     const sidebar = buildSidebar(ROOT) as { label: string }[]

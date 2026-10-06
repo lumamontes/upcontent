@@ -1,9 +1,8 @@
 import { readdirSync, statSync } from 'node:fs'
 import { isBlocked, resolveLabel } from './content-blocklist'
 import { hasRootIndex } from './homepage'
+import { MARKDOWN_EXTENSION, stripMarkdownExtension } from './markdown'
 import { getPortalConfig } from './portal-config'
-
-const MARKDOWN_EXTENSION = /\.(?:markdown|mdown|mkdn|mkd|mdwn|md|mdx)$/i
 
 // Diretórios de topo que existem só como agrupamento estrutural do
 // repositório de conteúdo, sem valor de navegação — seus filhos diretos
@@ -37,7 +36,7 @@ function sortEntries(entries: SidebarEntry[]): SidebarEntry[] {
 }
 
 function toSidebarSlug(relativePath: string, homepage: 'index' | 'readme'): string {
-  const slug = relativePath.replace(MARKDOWN_EXTENSION, '').toLowerCase()
+  const slug = stripMarkdownExtension(relativePath).toLowerCase()
   if (slug === homepage) return 'index'
   if (slug === 'readme') return 'readme'
   return slug.endsWith('/index') ? slug.slice(0, -'/index'.length) : slug
@@ -96,10 +95,10 @@ export function buildSidebar(docsRoot: string): SidebarEntry[] {
     return []
   }
 
-  const configuredRoots = getPortalConfig().navigation?.roots
   const homepage = hasRootIndex(docsRoot) ? 'index' : 'readme'
+  const configuredRoots = getPortalConfig().navigation?.roots
   const visibleTopLevel = configuredRoots
-    ? topLevel.filter(({ name }) => configuredRoots.includes(name))
+    ? topLevel.filter(({ name, isDir }) => configuredRoots.includes(name) || (!isDir && toSidebarSlug(name, homepage) === 'index'))
     : topLevel
 
   const entries: SidebarEntry[] = []

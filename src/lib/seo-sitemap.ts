@@ -2,8 +2,7 @@ import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { load as parseYaml } from 'js-yaml'
 import { hasRootIndex } from './homepage'
-
-const MARKDOWN_EXTENSION = /\.(?:markdown|mdown|mkdn|mkd|mdwn|md|mdx)$/i
+import { MARKDOWN_EXTENSION, stripMarkdownExtension } from './markdown'
 
 export function getNoindexRoutes(docsRoot: string): Set<string> {
   const routes = new Set<string>()
@@ -34,7 +33,7 @@ export function getNoindexRoutes(docsRoot: string): Set<string> {
       }
 
       const docPath = relative(docsRoot, filePath).replace(/\\/g, '/')
-      const route = docPath.replace(MARKDOWN_EXTENSION, '').replace(/\/index$/i, '').toLowerCase()
+       const route = stripMarkdownExtension(docPath).replace(/\/index$/i, '').toLowerCase()
       const encodedRoute = toSitemapRoute(route)
        routes.add(route === homepage ? '/' : `/${encodedRoute}`)
     }

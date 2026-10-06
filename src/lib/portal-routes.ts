@@ -1,8 +1,7 @@
 import { existsSync } from 'node:fs'
 import { dirname, relative, resolve, sep } from 'node:path'
 import { hasRootIndex } from './homepage'
-
-const MARKDOWN_EXTENSION = /\.(?:markdown|mdown|mkdn|mkd|mdwn|md|mdx)$/i
+import { MARKDOWN_EXTENSION, MARKDOWN_EXTENSIONS, stripMarkdownExtension } from './markdown'
 
 function splitHref(href: string): { path: string; suffix: string } {
   const match = href.match(/^([^?#]*)([?#].*)?$/)
@@ -22,7 +21,7 @@ function documentPath(path: string): string | undefined {
   if (MARKDOWN_EXTENSION.test(path)) {
     return existsSync(path) ? path : undefined
   }
-  for (const extension of ['.markdown', '.mdown', '.mkdn', '.mkd', '.mdwn', '.md', '.mdx']) {
+  for (const extension of MARKDOWN_EXTENSIONS) {
     if (existsSync(`${path}${extension}`)) return `${path}${extension}`
     if (path.endsWith('/') && existsSync(`${path}index${extension}`)) return `${path}index${extension}`
   }
@@ -30,7 +29,7 @@ function documentPath(path: string): string | undefined {
 }
 
 export function toPortalRoute(path: string, basePath = '/', homepage: 'index' | 'readme' = 'readme'): string {
-  const withoutExtension = path.replace(MARKDOWN_EXTENSION, '')
+  const withoutExtension = stripMarkdownExtension(path)
   const normalizedPath = withoutExtension.toLowerCase()
   const route = normalizedPath === homepage
     ? ''

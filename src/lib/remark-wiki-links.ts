@@ -3,9 +3,8 @@ import { resolve, sep } from 'node:path'
 import { visit } from 'unist-util-visit'
 import { PRODUCT_NAME } from './product-identity'
 import { hasRootIndex } from './homepage'
+import { MARKDOWN_EXTENSION, MARKDOWN_EXTENSIONS, stripMarkdownExtension } from './markdown'
 import { toPortalRoute } from './portal-routes'
-
-const MARKDOWN_EXTENSION = /\.(?:markdown|mdown|mkdn|mkd|mdwn|md|mdx)$/i
 
 interface MdastText {
   type: 'text'
@@ -39,7 +38,7 @@ function slugifyHeading(heading: string): string {
 }
 
 function pageRoute(pagePart: string, basePath: string, homepage: 'index' | 'readme'): string {
-  const withoutExtension = pagePart.replace(MARKDOWN_EXTENSION, '')
+  const withoutExtension = stripMarkdownExtension(pagePart)
   return toPortalRoute(`${slugifyPath(withoutExtension)}.md`, basePath, homepage)
 }
 
@@ -68,9 +67,8 @@ function wikiLinkResolves(ref: string, contentRoot: string): boolean {
   const target = resolve(contentRoot, pagePart)
   if (!target.startsWith(`${resolve(contentRoot)}${sep}`)) return false
   if (/\.[^/]+$/i.test(pagePart) && !MARKDOWN_EXTENSION.test(pagePart)) return false
-  const withoutExtension = target.replace(MARKDOWN_EXTENSION, '')
-  const extensions = ['.markdown', '.mdown', '.mkdn', '.mkd', '.mdwn', '.md', '.mdx']
-  return extensions.some(extension => existsSync(`${withoutExtension}${extension}`) || existsSync(resolve(target, `index${extension}`)))
+  const withoutExtension = stripMarkdownExtension(target)
+  return MARKDOWN_EXTENSIONS.some(extension => existsSync(`${withoutExtension}${extension}`) || existsSync(resolve(target, `index${extension}`)))
 }
 
 // Remark plugin: converts [[page]] / [[#heading]] / [[page#heading]] / [[page|label]]
