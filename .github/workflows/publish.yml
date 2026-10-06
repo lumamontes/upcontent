@@ -60,7 +60,16 @@ jobs:
         run: npm pack --dry-run
 
       - name: Check diff hygiene
-        run: git diff --check
+        run: |
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Check release artifacts
+        run: |
+          test -f dist/index.html
+          test -f dist/pagefind/pagefind.js
+          test -f dist/upcontent-assets/favicon.svg
 
       - name: Publish package
         run: npm publish --access public
