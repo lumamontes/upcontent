@@ -88,6 +88,15 @@ function includeInSitemap(page) {
   return !noindexRoutes.has(route)
 }
 
+function serializeSitemapEntry(entry) {
+  if (!site) return entry
+  const homepageUrl = new URL(`${(base || '').replace(/\/+$/, '')}/`, site).href
+  if (entry.url === homepageUrl.replace(/\/$/, '') || entry.url === homepageUrl) {
+    return { ...entry, url: homepageUrl }
+  }
+  return entry
+}
+
 // Remark plugin: converts ```mermaid blocks to <div class="mermaid"> BEFORE Shiki runs
 function remarkMermaid() {
   return (tree) => {
@@ -109,7 +118,7 @@ export default defineConfig({
   site,
   base,
   integrations: [
-    sitemap({ filter: includeInSitemap }),
+    sitemap({ filter: includeInSitemap, serialize: serializeSitemapEntry }),
     starlight({
       title: portalConfig.site?.title ?? PRODUCT_NAME,
       description: portalConfig.site?.description ?? PRODUCT_TAGLINE,
