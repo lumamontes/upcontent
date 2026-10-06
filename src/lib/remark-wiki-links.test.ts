@@ -79,6 +79,7 @@ describe('remarkWikiLinks', () => {
 
   it('aceita um wiki link que aponta para um documento do consumer', () => {
     expect(renderStrict('Veja [[README]].')).toContain('href="/readme/"')
+    expect(renderStrict('Veja [[README.md]].')).toContain('href="/readme/"')
     expect(renderStrict('Veja [[index]].')).toContain('href="/"')
   })
 

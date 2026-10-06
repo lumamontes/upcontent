@@ -122,7 +122,7 @@ describe('buildSidebar', () => {
     mountFs(ROOT, { 'README.md': null, 'index.markdown': null, domains: { historico: { 'a.md': null } } })
     const sidebar = buildSidebar(ROOT) as { slug?: string; label?: string }[]
     expect(sidebar[0]).toEqual({ slug: 'index', label: 'Home' })
-    expect(sidebar).toContainEqual({ slug: 'readme' })
+    expect(sidebar).toContainEqual({ slug: 'readme', label: 'Readme' })
   })
 
   it('aplica labelOverrides do .upcontent/config.json em cima do Title Case', () => {

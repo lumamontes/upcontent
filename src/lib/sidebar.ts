@@ -43,6 +43,11 @@ function toSidebarSlug(relativePath: string, homepage: 'index' | 'readme'): stri
   return slug.endsWith('/index') ? slug.slice(0, -'/index'.length) : slug
 }
 
+function sidebarFileEntry(relativePath: string, homepage: 'index' | 'readme'): SidebarLink {
+  const slug = toSidebarSlug(relativePath, homepage)
+  return slug === 'readme' ? { slug, label: resolveLabel('readme') } : { slug }
+}
+
 // Lista uma pasta ignorando dotfiles/dot-dirs e caminhos bloqueados
 // (ver content-blocklist.ts) — relPath é relativo à raiz do content, sem
 // barra inicial (ex: "domains/historico").
@@ -73,7 +78,7 @@ function buildDir(absDir: string, relPath: string, homepage: 'index' | 'readme')
     } else if (MARKDOWN_EXTENSION.test(name)) {
       // Slug do Starlight = path relativo ao content root, sem extensão,
       // minúsculo (ver ADR/nota em Footer.astro — mesmo mecanismo).
-      entries.push({ slug: toSidebarSlug(rel, homepage) })
+      entries.push(sidebarFileEntry(rel, homepage))
     }
   }
   return sortEntries(entries)
@@ -105,7 +110,7 @@ export function buildSidebar(docsRoot: string): SidebarEntry[] {
       const items = buildDir(`${docsRoot}/${name}`, name, homepage)
       if (items.length > 0) entries.push({ label: resolveLabel(name), items })
     } else if (MARKDOWN_EXTENSION.test(name)) {
-      entries.push({ slug: toSidebarSlug(name, homepage) })
+      entries.push(sidebarFileEntry(name, homepage))
     }
   }
 

@@ -38,6 +38,11 @@ function slugifyHeading(heading: string): string {
   return heading.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '')
 }
 
+function pageRoute(pagePart: string, basePath: string, homepage: 'index' | 'readme'): string {
+  const withoutExtension = pagePart.replace(MARKDOWN_EXTENSION, '')
+  return toPortalRoute(`${slugifyPath(withoutExtension)}.md`, basePath, homepage)
+}
+
 // Constrói a URL a partir da referência crua entre colchetes: [[#heading]] vira
 // anchor local; [[page]] vira path; [[page#heading]] combina os dois — path e
 // heading são fatiados (slugify) separadamente pra não perder o separador "#".
@@ -47,9 +52,9 @@ function buildUrl(ref: string, basePath = '/', homepage: 'index' | 'readme' = 'r
   if (hashIndex >= 0) {
     const pagePart = ref.slice(0, hashIndex)
     const headingPart = ref.slice(hashIndex + 1)
-    return `${toPortalRoute(`${slugifyPath(pagePart)}.md`, basePath, homepage)}#${slugifyHeading(headingPart)}`
+    return `${pageRoute(pagePart, basePath, homepage)}#${slugifyHeading(headingPart)}`
   }
-  return toPortalRoute(`${slugifyPath(ref)}.md`, basePath, homepage)
+  return pageRoute(ref, basePath, homepage)
 }
 
 function pagePartOf(ref: string): string {
