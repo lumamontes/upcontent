@@ -21,6 +21,7 @@ describe('getNoindexRoutes', () => {
     writeFileSync(join(root, 'guides', 'Release Notes.md'), '---\nnoindex: true\n---\n')
     writeFileSync(join(root, 'guides', 'release#notes.md'), '---\nnoindex: true\n---\n')
     writeFileSync(join(root, 'guides', 'release;notes.md'), '---\nnoindex: true\n---\n')
+    writeFileSync(join(root, 'guides', 'guide%23notes.md'), '---\nnoindex: true\n---\n')
     writeFileSync(join(root, 'public.md'), '---\nnoindex: false\n---\n')
 
     expect(getNoindexRoutes(root)).toEqual(new Set([
@@ -30,6 +31,7 @@ describe('getNoindexRoutes', () => {
       '/guides/release%20notes',
       '/guides/release%23notes',
       '/guides/release;notes',
+      '/guides/guide%2523notes',
     ]))
   })
 })

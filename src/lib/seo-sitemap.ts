@@ -47,6 +47,8 @@ export function getNoindexRoutes(docsRoot: string): Set<string> {
 }
 
 function toSitemapRoute(route: string): string {
-  const path = route.replace(/[?#]/g, character => character === '?' ? '%3F' : '%23')
+  const path = route
+    .replace(/%/g, '%25')
+    .replace(/[?#]/g, character => character === '?' ? '%3F' : '%23')
   return new URL(`https://upcontent.invalid/${path}`).pathname.replace(/^\//, '')
 }
