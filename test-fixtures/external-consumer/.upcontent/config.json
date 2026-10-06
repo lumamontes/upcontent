@@ -2,11 +2,15 @@
   "site": {
     "title": "External Consumer",
     "description": "A fixture proving consumer-owned configuration.",
+    "url": "https://docs.example.com",
     "logo": {
       "src": ".upcontent/logo.svg",
       "alt": "External Consumer"
     },
     "favicon": ".upcontent/favicon.svg"
+  },
+  "seo": {
+    "enabled": true
   },
   "repo": {
     "url": "https://github.com/example/external-consumer"

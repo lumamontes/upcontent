@@ -38,12 +38,17 @@ The optional fields below cover navigation, Starlight presentation, and content 
     "title": "Engineering Docs",
     "description": "Documentation for the engineering team.",
     "url": "https://docs.example.com",
+    "socialImage": "https://docs.example.com/social-card.png",
+    "locale": "en-US",
     "logo": {
       "src": ".upcontent/logo.svg",
       "alt": "Engineering Docs",
       "replacesTitle": false
     },
     "favicon": ".upcontent/favicon.svg"
+  },
+  "seo": {
+    "enabled": true
   },
   "repo": {
     "url": "https://github.com/acme/engineering-docs"
@@ -82,7 +87,8 @@ The optional fields below cover navigation, Starlight presentation, and content 
 
 | Group | Controls |
 | --- | --- |
-| `site` | Name, description, URL, logo, and favicon. |
+| `site` | Name, description, URL, social image, locale, logo, and favicon. |
+| `seo` | Explicitly enables search-engine discoverability. Defaults to disabled. |
 | `repo` | Source repository links. |
 | `theme` | Consumer-owned local CSS. |
 | `starlight` | Safe layout, social, table of contents, pagination, and code options. |
@@ -90,3 +96,5 @@ The optional fields below cover navigation, Starlight presentation, and content 
 | `content` | Frontmatter title field selection. |
 
 Invalid curated values are ignored or fall back safely. Heading levels must be integers from 1 through 6, and the minimum cannot exceed the maximum.
+
+SEO is opt-in. With `seo.enabled` omitted or set to `false`, the portal emits `noindex, nofollow` and `robots.txt` disallows crawling. This does not protect the site: use access-controlled hosting for a private portal.

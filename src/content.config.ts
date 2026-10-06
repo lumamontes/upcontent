@@ -16,6 +16,16 @@ export { getBlocklist, isBlocked, toRelativeDocPath }
 // SchemaContext (o título obrigatório do Starlight é resolvido pelo loader,
 // não pelo schema — ver resolveTitle()).
 export const domainFieldsSchema = z.object({
+  canonical: z.string().refine(value => {
+    try {
+      new URL(value)
+      return true
+    } catch {
+      return false
+    }
+  }, 'canonical must be an absolute URL').optional(),
+  image: z.string().optional(),
+  noindex: z.boolean().optional(),
   type: z.string().optional(),
   status: z.string().optional(),
   created: z.string().or(z.date().transform(d => d.toISOString().split('T')[0])).optional(),

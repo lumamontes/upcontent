@@ -88,11 +88,16 @@ The consumer configuration is deliberately small:
   "site": {
     "title": "Engineering Docs",
     "description": "Documentation for the engineering team.",
+    "socialImage": "https://docs.example.com/social-card.png",
+    "locale": "en-US",
     "logo": {
       "src": ".upcontent/logo.svg",
       "alt": "Engineering Docs"
     },
     "favicon": ".upcontent/favicon.svg"
+  },
+  "seo": {
+    "enabled": true
   },
   "repo": {
     "url": "https://github.com/acme/engineering-docs"

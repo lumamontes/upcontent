@@ -21,6 +21,14 @@ describe('getPortalConfig', () => {
     expect(config).toEqual({})
   })
 
+  it('mantém SEO desativado quando a política não está configurada', async () => {
+    vi.mocked(fs.existsSync).mockReturnValue(true)
+    vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify({ site: { url: 'https://docs.example.com' } }))
+    const { getPortalConfig } = await import('./portal-config')
+
+    expect(getPortalConfig().seo?.enabled).toBe(false)
+  })
+
   it('retorna config parseada quando config.json existe e é válido', async () => {
     vi.mocked(fs.existsSync).mockReturnValue(true)
     vi.mocked(fs.readFileSync).mockReturnValue(
@@ -32,7 +40,8 @@ describe('getPortalConfig', () => {
           logo: { src: '/logo.svg', alt: 'Meu Portal', replacesTitle: true },
           favicon: '/favicon.svg',
         },
-         repo: { url: 'https://github.com/org/repo' },
+          seo: { enabled: true },
+          repo: { url: 'https://github.com/org/repo' },
          theme: { customCss: ['.upcontent/theme.css'] },
          starlight: {
            social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/org/repo' }],
@@ -49,6 +58,7 @@ describe('getPortalConfig', () => {
     expect(config.site?.title).toBe('Meu Portal')
     expect(config.site?.description).toBe('Documentação do time')
     expect(config.site?.url).toBe('https://docs.example.com')
+    expect(config.seo?.enabled).toBe(true)
     expect(config.site?.logo?.src).toBe('/logo.svg')
     expect(config.site?.favicon).toBe('/favicon.svg')
     expect(config.repo?.url).toBe('https://github.com/org/repo')

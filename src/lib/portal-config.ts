@@ -24,8 +24,14 @@ export interface PortalConfigSite {
   title?: string
   description?: string
   url?: string
+  socialImage?: string
+  locale?: string
   logo?: PortalConfigLogo
   favicon?: string
+}
+
+export interface PortalConfigSeo {
+  enabled?: boolean
 }
 
 export interface PortalConfigTheme {
@@ -42,6 +48,7 @@ export interface PortalConfigStarlight {
 
 export interface PortalConfig {
   site?: PortalConfigSite
+  seo?: PortalConfigSeo
   repo?: { url?: string }
   theme?: PortalConfigTheme
   starlight?: PortalConfigStarlight
@@ -108,6 +115,7 @@ function asTableOfContents(value: unknown): PortalConfigStarlight['tableOfConten
 function normalizeConfig(value: unknown): PortalConfig {
   const raw = asRecord(value)
   const rawSite = asRecord(raw.site)
+  const rawSeo = asRecord(raw.seo)
   const rawLogo = asRecord(rawSite.logo)
   const rawRepo = asRecord(raw.repo)
   const rawTheme = asRecord(raw.theme)
@@ -128,9 +136,12 @@ function normalizeConfig(value: unknown): PortalConfig {
       title: asString(rawSite.title),
       description: asString(rawSite.description),
       url: asString(rawSite.url),
+      socialImage: asString(rawSite.socialImage),
+      locale: asString(rawSite.locale),
       logo,
       favicon: asString(rawSite.favicon),
     },
+    seo: { enabled: rawSeo.enabled === true },
     repo: { url: asString(rawRepo.url) },
     theme: { customCss: asStringArray(rawTheme.customCss) },
     starlight: {

@@ -90,7 +90,9 @@ function rehypeStripMdLinks() {
 
 export default defineConfig({
   output: 'static',
-  site: process.env.SITE_URL || portalConfig.site?.url || undefined,
+  site: portalConfig.seo?.enabled === true
+    ? process.env.SITE_URL || portalConfig.site?.url || undefined
+    : undefined,
   base: process.env.BASE_PATH || undefined,
   integrations: [
     starlight({

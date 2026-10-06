@@ -35,6 +35,20 @@ sidebar:
 
 Use `##` for body sections because the page title is rendered as the top-level heading.
 
+SEO-specific frontmatter is optional:
+
+```md
+---
+title: Configure a consumer repository
+description: Set up a documentation repository and publish it as a searchable portal.
+canonical: https://docs.example.com/getting-started/consumer-repository/
+image: https://docs.example.com/social-card.png
+noindex: false
+---
+```
+
+`description` is used in search and social metadata. `canonical`, `image`, and `noindex` override the generated defaults for that page. The site-level `socialImage` in `.upcontent/config.json` is used when a page does not define its own image.
+
 ## Supported content features
 
 - Obsidian-style callouts for notes, tips, cautions, and dangers

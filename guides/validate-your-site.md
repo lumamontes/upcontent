@@ -36,6 +36,10 @@ Open the pages listed in the [capability showcase](../showcase/) and check:
 - Callouts, Mermaid, JSON, YAML, and CSV examples render correctly.
 - The layout works at desktop and mobile widths.
 - The browser console has no required-asset errors.
+- Each indexable page has a useful title, description, canonical URL, and one top-level heading.
+- `dist/robots.txt` points to the generated sitemap.
+- The page source contains JSON-LD and uses the intended `SITE_URL` and `BASE_PATH`.
+- `seo.enabled` matches the intended portal policy; disabled SEO must produce `noindex, nofollow` and `Disallow: /`.
 
 ## Check content boundaries
 

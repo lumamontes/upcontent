@@ -28,6 +28,22 @@ describe('domainFieldsSchema', () => {
     expect(result.success).toBe(true)
   })
 
+  it('aceita SEO por página com canonical absoluto e noindex', () => {
+    const result = domainFieldsSchema.safeParse({
+      canonical: 'https://docs.example.com/guides/seo/',
+      image: 'https://docs.example.com/social-card.png',
+      noindex: true,
+    })
+
+    expect(result.success).toBe(true)
+  })
+
+  it('rejeita canonical relativo', () => {
+    const result = domainFieldsSchema.safeParse({ canonical: '/guides/seo/' })
+
+    expect(result.success).toBe(false)
+  })
+
   it('aceita created/updated como objeto Date (YAML parseia datas automaticamente)', () => {
     const result = domainFieldsSchema.safeParse({
       created: new Date('2026-08-07'),
