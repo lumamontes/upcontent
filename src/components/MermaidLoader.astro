@@ -2,14 +2,21 @@
 ---
 
 <script>
-  import mermaid from 'mermaid'
   import { renderMermaidDiagram } from '../lib/mermaid-render'
 
   function mermaidTheme() {
     return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'default'
   }
 
-  mermaid.initialize({ startOnLoad: false, theme: mermaidTheme() })
+  let mermaidPromise: Promise<typeof import('mermaid').default> | undefined
+
+  function loadMermaid() {
+    mermaidPromise ??= import('mermaid').then(({ default: mermaid }) => {
+      mermaid.initialize({ startOnLoad: false, theme: mermaidTheme() })
+      return mermaid
+    })
+    return mermaidPromise
+  }
 
   let scale = 1
   let translateX = 0
@@ -105,6 +112,9 @@
 
   async function processDiagrams() {
     const nodes = Array.from(document.querySelectorAll<HTMLElement>('div.mermaid'))
+    if (nodes.length === 0) return
+
+    const mermaid = await loadMermaid()
     for (const node of nodes) {
       // <br/> inside a div becomes a DOM element before textContent reads it — não deveria
       // acontecer (remarkMermaid já normaliza), mas o replace aqui é defensivo.
@@ -162,8 +172,12 @@
   }
 
   async function rerenderExistingDiagrams() {
+    const containers = Array.from(document.querySelectorAll<HTMLElement>('[data-mermaid-source]'))
+    if (containers.length === 0) return
+
+    const mermaid = await loadMermaid()
     mermaid.initialize({ startOnLoad: false, theme: mermaidTheme() })
-    for (const container of document.querySelectorAll<HTMLElement>('[data-mermaid-source]')) {
+    for (const container of containers) {
       const source = container.dataset.mermaidSource
       if (!source) continue
       const result = await renderMermaidDiagram(mermaid, source)
