@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs'
 import { resolve, sep } from 'node:path'
 import { visit } from 'unist-util-visit'
 import { PRODUCT_NAME } from './product-identity'
+import { hasRootIndex } from './homepage'
 import { toPortalRoute } from './portal-routes'
 
 interface MdastText {
@@ -38,15 +39,15 @@ function slugifyHeading(heading: string): string {
 // Constrói a URL a partir da referência crua entre colchetes: [[#heading]] vira
 // anchor local; [[page]] vira path; [[page#heading]] combina os dois — path e
 // heading são fatiados (slugify) separadamente pra não perder o separador "#".
-function buildUrl(ref: string, basePath = '/'): string {
+function buildUrl(ref: string, basePath = '/', homepage: 'index' | 'readme' = 'readme'): string {
   if (ref.startsWith('#')) return '#' + slugifyHeading(ref.slice(1))
   const hashIndex = ref.indexOf('#')
   if (hashIndex >= 0) {
     const pagePart = ref.slice(0, hashIndex)
     const headingPart = ref.slice(hashIndex + 1)
-    return `${toPortalRoute(`${slugifyPath(pagePart)}.md`, basePath)}#${slugifyHeading(headingPart)}`
+    return `${toPortalRoute(`${slugifyPath(pagePart)}.md`, basePath, homepage)}#${slugifyHeading(headingPart)}`
   }
-  return toPortalRoute(`${slugifyPath(ref)}.md`, basePath)
+  return toPortalRoute(`${slugifyPath(ref)}.md`, basePath, homepage)
 }
 
 function pagePartOf(ref: string): string {
@@ -69,6 +70,7 @@ function wikiLinkResolves(ref: string, contentRoot: string): boolean {
 // Obsidian wiki links pra links markdown normais.
 export function remarkWikiLinks(options: WikiLinkOptions = {}) {
   return (tree: MdastParent, file: { path?: string }) => {
+    const homepage = options.contentRoot && hasRootIndex(options.contentRoot) ? 'index' : 'readme'
     visit(tree, 'text', (node: MdastText, index: number | undefined, parent: MdastParent | undefined) => {
       if (!node.value.includes('[[')) return
       const parts: (MdastText | MdastLink)[] = []
@@ -91,7 +93,7 @@ export function remarkWikiLinks(options: WikiLinkOptions = {}) {
           const source = file.path ? ` in ${file.path}` : ''
           throw new Error(`[${PRODUCT_NAME}] Broken wiki link [[${inner}]]${source}`)
         }
-        const url = buildUrl(ref, options.basePath)
+        const url = buildUrl(ref, options.basePath, homepage)
         parts.push({ type: 'link', url, title: null, children: [{ type: 'text', value: label }] })
         lastIndex = match.index + match[0].length
       }

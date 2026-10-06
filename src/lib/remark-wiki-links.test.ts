@@ -78,12 +78,13 @@ describe('remarkWikiLinks', () => {
   })
 
   it('aceita um wiki link que aponta para um documento do consumer', () => {
-    expect(renderStrict('Veja [[README]].')).toContain('href="/"')
+    expect(renderStrict('Veja [[README]].')).toContain('href="/readme/"')
+    expect(renderStrict('Veja [[index]].')).toContain('href="/"')
   })
 
   it('mantém os formatos suportados sob validação estrita', () => {
     expect(renderStrict('[[#Product]] [[README#Product]] [[README|início]]')).toContain('href="#product"')
-    expect(renderStrict('[[#Product]] [[README#Product]] [[README|início]]')).toContain('href="/#product"')
+    expect(renderStrict('[[#Product]] [[README#Product]] [[README|início]]')).toContain('href="/readme/#product"')
   })
 
   it('rejeita referências a arquivos que não são documentos', () => {

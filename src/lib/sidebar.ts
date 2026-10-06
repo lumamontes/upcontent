@@ -3,6 +3,8 @@ import { isBlocked, resolveLabel } from './content-blocklist'
 import { hasRootIndex } from './homepage'
 import { getPortalConfig } from './portal-config'
 
+const MARKDOWN_EXTENSION = /\.(?:markdown|mdown|mkdn|mkd|mdwn|md|mdx)$/i
+
 // Diretórios de topo que existem só como agrupamento estrutural do
 // repositório de conteúdo, sem valor de navegação — seus filhos diretos
 // são promovidos pra sidebar de topo em vez de aparecerem aninhados um
@@ -68,7 +70,7 @@ function buildDir(absDir: string, relPath: string, homepage: 'index' | 'readme')
     if (isDir) {
       const items = buildDir(`${absDir}/${name}`, rel, homepage)
       if (items.length > 0) entries.push({ label: resolveLabel(name), items })
-    } else if (/\.mdx?$/i.test(name)) {
+    } else if (MARKDOWN_EXTENSION.test(name)) {
       // Slug do Starlight = path relativo ao content root, sem extensão,
       // minúsculo (ver ADR/nota em Footer.astro — mesmo mecanismo).
       entries.push({ slug: toSidebarSlug(rel, homepage) })
