@@ -3,24 +3,58 @@ heading: Upcontent
 description: Turn a documentation repository into a fast, searchable, customizable static portal.
 ---
 
-Upcontent turns a Markdown repository into a documentation site that is ready to share.
+<div align="center">
 
-It is for software teams that already have documentation, but need a better way to publish it: clear navigation, search, useful rendering for technical content, consumer-owned branding, and a repeatable static build.
+# Upcontent
 
-## The short version
+**Turn the documentation repository you already have into a fast, searchable, customizable portal.**
 
-Upcontent gives a documentation repository:
+[![CI](https://github.com/lumamontes/upcontent/actions/workflows/ci.yml/badge.svg)](https://github.com/lumamontes/upcontent/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/upcontent?color=0f766e&label=npm)](https://www.npmjs.com/package/upcontent)
 
-- A responsive [Starlight](https://starlight.astro.build/) portal with navigation, search, themes, and table of contents
-- A `.upcontent/config.json` file for identity, navigation, rendering, and content boundaries
-- Custom CSS for the consumer's own brand
-- Rendered callouts, Mermaid diagrams, JSON, YAML, CSV, and wiki links
-- A static `dist/` directory that can be deployed to GitHub Pages or any static host
-- Build checks that catch broken wiki links and excluded content before publication
+<a href="https://lumamontes.github.io/upcontent/">See the live showcase</a> · <a href="#get-started">Get started in under a minute</a>
 
-The source repository remains the source of truth. Upcontent does not require a database, a companion server, or a new authoring system.
+</div>
 
-## Is this the right tool?
+## See the result
+
+This is the real Upcontent portal generated from this repository and deployed to GitHub Pages.
+
+<p align="center">
+  <a href="https://lumamontes.github.io/upcontent/"><img src="assets/readme/portal-home.png" alt="Upcontent documentation portal home page" width="900"></a>
+</p>
+
+The same build includes a capability showcase for technical content, structured data, callouts, diagrams, navigation, and search.
+
+<p align="center">
+  <a href="https://lumamontes.github.io/upcontent/showcase/"><img src="assets/readme/portal-showcase.png" alt="Upcontent capability showcase page" width="900"></a>
+</p>
+
+## From repository to portal
+
+Upcontent keeps your source of truth in Git and adds the publishing layer: clear navigation, full-text search, technical content rendering, consumer-owned branding, and a repeatable static build.
+
+If your Markdown already lives in a GitHub repository, the flow is:
+
+```sh
+pnpm dlx upcontent init
+pnpm dlx upcontent dev
+```
+
+The first command creates `.upcontent/` and a GitHub Pages workflow. The second starts a local portal using the repository you are already in. You do not need to clone the Upcontent renderer into your documentation repository.
+
+Push the generated workflow and your documentation is published as a static site. The source repository remains the source of truth; Upcontent does not require a database, a companion server, or a new authoring system.
+
+## What you get
+
+- A responsive [Starlight](https://starlight.astro.build/) portal with navigation, search, themes, and table of contents.
+- A `.upcontent/config.json` file for identity, navigation, rendering, and content boundaries.
+- Consumer-owned logos, favicon, CSS, site identity, and navigation.
+- Rendered callouts, Mermaid diagrams, JSON, YAML, CSV, and wiki links.
+- A static `dist/` directory deployable to GitHub Pages or any static host.
+- Build checks that catch broken wiki links and excluded content before publication.
+
+## Is it a good fit?
 
 Upcontent is a good fit when:
 
@@ -32,24 +66,9 @@ Upcontent is a good fit when:
 
 It is not the right fit when your site needs runtime authentication, server-rendered personalization, or review comments inside the published portal.
 
-## Get started
+## Explore this repository locally
 
-### Publish an existing documentation repository
-
-If your Markdown already lives in a GitHub repository, run the bootstrap command from that repository's root:
-
-```sh
-pnpm dlx upcontent init
-pnpm dlx upcontent dev
-```
-
-The first command creates `.upcontent/` and a GitHub Pages workflow. The second starts a local portal using the repository you are already in. You do not need to clone the Upcontent renderer into your documentation repository.
-
-See [Set up a consumer repository](getting-started/consumer-repository/) for the generated structure and configuration.
-
-### Explore this repository locally
-
-Clone this repository, then start the included golden consumer. This path is for exploring Upcontent itself:
+Clone this repository, then start the included golden consumer:
 
 ```sh
 git clone https://github.com/lumamontes/upcontent.git
@@ -60,7 +79,9 @@ make dev CONTENT_PATH=.
 
 Then open the local URL printed by Astro. The [capability showcase](showcase/) is the fastest way to see the complete rendering and customization surface.
 
-The generated consumer configuration looks like this:
+## Configure your portal
+
+The consumer configuration is deliberately small:
 
 ```json
 {
@@ -84,24 +105,13 @@ The generated consumer configuration looks like this:
 
 Follow [Set up a consumer repository](getting-started/consumer-repository/) for the complete setup, then use [Customization](customization/) to shape the portal.
 
-## See the full path
-
-- [First build](getting-started/first-build/): run the portal locally and generate static output.
-- [Consumer repository](getting-started/consumer-repository/): prepare content, assets, and configuration.
-- [Customization](customization/): configure identity, theme, navigation, content, JSON, and environment variables.
-- [Authoring content](guides/authoring-content/): write pages that are clear and easy to scan.
-- [Deployment](deployment/): publish the generated files to GitHub Pages or another static host.
-- [Capability showcase](showcase/): inspect all supported content and rendering features in one page.
-
 ## Build for production
 
 ```sh
 make build CONTENT_PATH=/path/to/your-consumer-repo
 ```
 
-The generated site is written to `dist/` and includes the Pagefind search index.
-
-Before publishing, run:
+The generated site is written to `dist/` and includes the Pagefind search index. Before publishing, run:
 
 ```sh
 pnpm test
@@ -109,6 +119,8 @@ pnpm check
 make build CONTENT_PATH=.
 make check-external
 ```
+
+Read the [deployment guide](deployment/) for GitHub Pages and other static hosts.
 
 ## Built on Astro and Starlight
 
