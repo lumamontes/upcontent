@@ -69,6 +69,7 @@ if (portalConfig.seo?.enabled === true && configuredSiteUrl) {
   try {
     const parsedSiteUrl = new URL(configuredSiteUrl)
     if (parsedSiteUrl.protocol !== 'http:' && parsedSiteUrl.protocol !== 'https:') throw new Error('unsupported protocol')
+    if (parsedSiteUrl.username || parsedSiteUrl.password) throw new Error('userinfo is not allowed')
     site = parsedSiteUrl.origin
     if (!process.env.BASE_PATH) base = parsedSiteUrl.pathname === '/' ? undefined : parsedSiteUrl.pathname
   } catch {
@@ -84,7 +85,7 @@ function includeInSitemap(page) {
     : basePath && pathname.startsWith(`${basePath}/`)
       ? pathname.slice(basePath.length)
       : pathname
-  return route !== '/' && !noindexRoutes.has(route)
+  return !noindexRoutes.has(route)
 }
 
 // Remark plugin: converts ```mermaid blocks to <div class="mermaid"> BEFORE Shiki runs

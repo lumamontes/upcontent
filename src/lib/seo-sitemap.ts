@@ -33,7 +33,7 @@ export function getNoindexRoutes(docsRoot: string): Set<string> {
 
       const docPath = relative(docsRoot, filePath).replace(/\\/g, '/')
       const route = docPath.replace(MARKDOWN_EXTENSION, '').replace(/\/index$/i, '').toLowerCase()
-      const encodedRoute = route.split('/').map(segment => encodeURIComponent(segment)).join('/')
+      const encodedRoute = toSitemapRoute(route)
       routes.add(route === 'readme' ? '/' : `/${encodedRoute}`)
     }
   }
@@ -44,4 +44,9 @@ export function getNoindexRoutes(docsRoot: string): Set<string> {
     return routes
   }
   return routes
+}
+
+function toSitemapRoute(route: string): string {
+  const path = route.replace(/[?#]/g, character => character === '?' ? '%3F' : '%23')
+  return new URL(`https://upcontent.invalid/${path}`).pathname.replace(/^\//, '')
 }
