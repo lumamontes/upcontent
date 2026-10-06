@@ -84,7 +84,7 @@ function includeInSitemap(page) {
     : basePath && pathname.startsWith(`${basePath}/`)
       ? pathname.slice(basePath.length)
       : pathname
-  return !noindexRoutes.has(route)
+  return route !== '/' && !noindexRoutes.has(route)
 }
 
 // Remark plugin: converts ```mermaid blocks to <div class="mermaid"> BEFORE Shiki runs

@@ -11,6 +11,8 @@ import { getPortalConfig } from './lib/portal-config'
 
 export { getBlocklist, isBlocked, toRelativeDocPath }
 
+const MARKDOWN_EXTENSION = /\.(?:markdown|mdown|mkdn|mkd|mdwn|md|mdx)$/i
+
 // Campos de domínio específicos deste portal, além do schema padrão do
 // Starlight (title, description, sidebar, etc). Mantido isolado do
 // docsSchema() do Starlight pra ser testável sem precisar de um
@@ -59,12 +61,12 @@ export function resolveTitle(relativeFilePath: string, data: Record<string, unkn
   }
 
   const filename = relativeFilePath.split('/').pop() ?? relativeFilePath
-  const withoutExt = filename.replace(/\.mdx?$/i, '')
+  const withoutExt = filename.replace(MARKDOWN_EXTENSION, '')
   data.title = toTitleCase(withoutExt)
 }
 
 export function toCollectionId(relativeFilePath: string): string {
-  const normalized = relativeFilePath.split(path.sep).join('/').replace(/\.mdx?$/i, '').toLowerCase()
+  const normalized = relativeFilePath.split(path.sep).join('/').replace(MARKDOWN_EXTENSION, '').toLowerCase()
   if (normalized === 'readme') return 'index'
   return normalized.endsWith('/index') ? normalized.slice(0, -'/index'.length) : normalized
 }

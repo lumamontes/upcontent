@@ -18,6 +18,7 @@ if (!existsSync('dist/robots.txt')) throw new Error('External consumer robots.tx
 if (!existsSync('dist/sitemap-index.xml')) throw new Error('External consumer sitemap is missing')
 if (!readFileSync('dist/noindex/index.html', 'utf8').includes('noindex, nofollow')) throw new Error('External consumer noindex page is not marked noindex')
 if (readFileSync('dist/sitemap-0.xml', 'utf8').includes('/noindex/')) throw new Error('External consumer noindex page leaked into sitemap')
+if (readFileSync('dist/sitemap-0.xml', 'utf8').includes('<loc>https://docs.example.com</loc>')) throw new Error('External consumer root route leaked into sitemap')
 if (existsSync('dist/forbidden/index.html')) throw new Error('External consumer blocklist leaked forbidden.md')
 if (existsSync('dist/upcontent-renderer/readme/index.html')) {
   throw new Error('External consumer build leaked renderer checkout content')

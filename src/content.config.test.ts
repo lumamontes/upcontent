@@ -94,6 +94,12 @@ describe('resolveTitle', () => {
     expect(data.title).toBe('Trd Backend')
   })
 
+  it('remove todas as extensões Markdown suportadas no título', () => {
+    const data: Record<string, unknown> = {}
+    resolveTitle('guides/legacy.markdown', data)
+    expect(data.title).toBe('Legacy')
+  })
+
   it('remove prefixo numérico do filename antes de converter', () => {
     const data: Record<string, unknown> = {}
     resolveTitle('docs/adr/0001-self-hosted.md', data)
@@ -191,6 +197,10 @@ describe('toCollectionId', () => {
 
   it('normalizes document ids while preserving nested routes', () => {
     expect(toCollectionId('Guides/Getting-Started.mdx')).toBe('guides/getting-started')
+  })
+
+  it('normalizes alternative Markdown extensions', () => {
+    expect(toCollectionId('Guides/Legacy.markdown')).toBe('guides/legacy')
   })
 
   it('normalizes nested index documents to their directory route', () => {
