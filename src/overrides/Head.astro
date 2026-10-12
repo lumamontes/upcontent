@@ -101,3 +101,27 @@ function resolveOptionalUrl(value: unknown, baseUrl: string | undefined): string
 {structuredDataJson && <script type="application/ld+json" set:html={structuredDataJson} />}
 <MermaidLoader />
 <StructuredDataCopy />
+<script is:inline>
+  const openExternalLinksInNewTabs = () => {
+    document.querySelectorAll('a[href]').forEach((link) => {
+      const href = link.getAttribute('href')
+      if (!href) return
+
+      let url
+      try {
+        url = new URL(href, window.location.href)
+      } catch {
+        return
+      }
+
+      if (!['http:', 'https:'].includes(url.protocol) || url.origin === window.location.origin) return
+
+      link.target = '_blank'
+      link.rel = 'noopener noreferrer'
+    })
+  }
+
+  document.addEventListener('astro:page-load', openExternalLinksInNewTabs)
+  document.addEventListener('DOMContentLoaded', openExternalLinksInNewTabs)
+  if (document.readyState !== 'loading') openExternalLinksInNewTabs()
+</script>
